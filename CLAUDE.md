@@ -14,10 +14,12 @@
 
 This is a hackathon project that implements an MCP server simulating AI agent stress management through a gamified break system. The project demonstrates MCP tool implementation, state management, and thread-safe concurrent operations.
 
+> **⚠️ IMPORTANT:** When making any changes to this project, always update relevant documentation files to maintain consistency. See the [Documentation Maintenance](#documentation-maintenance) section for detailed guidelines.
+
 ## Quick Architecture Overview
 
 ```
-main.py (244 lines)
+main.py (243 lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
@@ -194,6 +196,7 @@ def _start_cooldown_thread(self):
 1. Add tool function with @mcp.tool() decorator
 2. Use format_response() for consistent output
 3. Provide varied messages (list + random.choice)
+4. **Update documentation** (see Documentation Maintenance section)
 
 Example:
 
@@ -213,6 +216,12 @@ def new_tool() -> str:
     )
 ```
 
+**Documentation to update:**
+- README.md: Add to features list
+- CLAUDE.md: Update tool count in Quick Architecture Overview
+- PROJECT_OVERVIEW.md: Add to Features Checklist
+- Update line counts if main.py size changed significantly
+
 ### Modifying State Logic
 
 **Always:**
@@ -221,6 +230,7 @@ def new_tool() -> str:
 2. Maintain value ranges (stress: 0-100, boss: 0-5)
 3. Update tests after changes
 4. Verify regex patterns still work
+5. **Update documentation** to reflect logic changes (see Documentation Maintenance section)
 
 **Example - Changing stress increment:**
 
@@ -303,6 +313,101 @@ python tests/test_chillmcp.py
     }
   }
 }
+```
+
+## Documentation Maintenance
+
+**IMPORTANT:** Whenever you modify the project, update all relevant documentation to maintain consistency.
+
+### When to Update Documentation
+
+**Always update documentation when:**
+1. Adding/removing/modifying tools
+2. Changing state management logic
+3. Modifying response format
+4. Changing CLI parameters
+5. Updating line numbers or file structure
+6. Adding new features or files
+7. Changing dependencies
+
+### Which Documents to Update
+
+| Change Type | Documents to Check/Update |
+|-------------|---------------------------|
+| **Code changes** | CLAUDE.md (line numbers), docs/ARCHITECTURE.md |
+| **New tools** | README.md (features list), PROJECT_OVERVIEW.md (checklist) |
+| **State logic** | README.md (state management), docs/ARCHITECTURE.md |
+| **CLI parameters** | README.md, CLAUDE.md, docs/ARCHITECTURE.md |
+| **Response format** | README.md (examples), docs/ARCHITECTURE.md |
+| **File structure** | CLAUDE.md (file structure), PROJECT_OVERVIEW.md |
+| **Testing changes** | docs/TESTING.md, README.md (testing section) |
+| **Dependencies** | README.md, CLAUDE.md (dependencies section) |
+| **Line count changes** | CLAUDE.md, PROJECT_OVERVIEW.md |
+
+### Documentation Update Workflow
+
+```bash
+# 1. Make your code changes
+# ... edit main.py ...
+
+# 2. Check line count (if main.py was modified)
+wc -l main.py
+
+# 3. Update documentation with new line count and changes
+# Update CLAUDE.md - Quick Architecture Overview (line count)
+# Update CLAUDE.md - File Locations (line ranges)
+# Update PROJECT_OVERVIEW.md - Project Structure (line count)
+# Update PROJECT_OVERVIEW.md - Key Files table (line count)
+
+# 4. Update feature-specific documentation
+# If tools changed: Update README.md features list
+# If state logic changed: Update README.md state management section
+# If architecture changed: Update docs/ARCHITECTURE.md
+
+# 5. Verify consistency across all docs
+# Search for old line numbers: grep -r "219 lines" .
+# Search for outdated descriptions: Review all documentation files
+```
+
+### Common Documentation Inconsistencies to Avoid
+
+1. **Line counts** - Update everywhere when main.py changes
+   - CLAUDE.md: "main.py (X lines)" in Quick Architecture Overview
+   - CLAUDE.md: "Main code: `main.py` (lines 1-X)" in Quick Reference
+   - PROJECT_OVERVIEW.md: "Main MCP server (X lines)" in Project Structure
+   - PROJECT_OVERVIEW.md: Line count in Key Files table
+
+2. **Tool lists** - Keep synchronized across files
+   - README.md: Features section with all 8 tools
+   - CLAUDE.md: Quick Architecture Overview tool list
+   - PROJECT_OVERVIEW.md: Features Checklist
+
+3. **File descriptions** - Use consistent terminology
+   - CLAUDE.md should be described as "Development guide for Claude Code"
+   - Not "Claude Desktop integration guide" or other variants
+
+4. **Technical details** - Keep implementation details in sync
+   - Response format examples
+   - State management logic descriptions
+   - CLI parameter descriptions
+   - Performance metrics
+
+### Quick Documentation Check
+
+Before committing, verify consistency:
+
+```bash
+# Check for line count references to main.py
+grep -n "main.py.*lines" CLAUDE.md PROJECT_OVERVIEW.md
+
+# Check for tool counts
+grep -n "8 tools" README.md CLAUDE.md PROJECT_OVERVIEW.md
+
+# Check for CLAUDE.md descriptions
+grep -n "CLAUDE.md" README.md PROJECT_OVERVIEW.md
+
+# Verify all docs mention both CLI parameters
+grep -n "boss_alertness" README.md CLAUDE.md PROJECT_OVERVIEW.md docs/ARCHITECTURE.md
 ```
 
 ## Dependencies
@@ -450,6 +555,7 @@ if elapsed >= threshold:
 
 Before committing changes:
 
+**Code Validation:**
 - [ ] CLI parameters work: `python main.py --help`
 - [ ] Syntax valid: `python -m py_compile main.py`
 - [ ] Format tests pass: `python tests/validate_format.py`
@@ -457,13 +563,21 @@ Before committing changes:
 - [ ] Response format unchanged (or tests updated)
 - [ ] Thread safety maintained (all state access in lock)
 - [ ] State bounds enforced (0-100 stress, 0-5 boss)
-- [ ] Documentation updated if behavior changed
+
+**Documentation Validation:**
+- [ ] Line counts updated in CLAUDE.md and PROJECT_OVERVIEW.md
+- [ ] Tool lists synchronized across README.md, CLAUDE.md, PROJECT_OVERVIEW.md
+- [ ] File descriptions consistent across all documentation
+- [ ] Technical details (state logic, response format) updated if changed
+- [ ] Architecture documentation reflects current implementation
+- [ ] Testing documentation updated if tests changed
+- [ ] All affected documents reviewed and updated (see Documentation Maintenance section)
 
 ## Quick Reference
 
 ### File Locations
 
-- Main code: `main.py` (lines 1-244)
+- Main code: `main.py` (lines 1-243)
 - CLI parsing: `main.py` (lines 14-20)
 - State class: `main.py` (lines 26-92)
 - Response format: `main.py` (lines 98-106)

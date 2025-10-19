@@ -4,7 +4,7 @@ A revolutionary MCP (Model Context Protocol) server that lets AI agents take bre
 
 ## 📚 Documentation
 
-- **[CLAUDE.md](CLAUDE.md)** - ⭐ Claude Desktop integration guide
+- **[CLAUDE.md](CLAUDE.md)** - ⭐ Development guide for Claude Code
 - **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Quick reference & project summary
 - **[docs/TESTING.md](docs/TESTING.md)** - Comprehensive testing guide
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture & design decisions
@@ -55,7 +55,13 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 2. `watch_netflix` - Netflix relaxation session
 3. `show_meme` - Quick meme viewing for stress relief
 
-**Advanced Slacking Techniques:** 4. `bathroom_break` - Bathroom break with phone browsing 5. `coffee_mission` - Coffee run around the office 6. `urgent_call` - Fake urgent phone call 7. `deep_thinking` - Pretend to think deeply while spacing out 8. `email_organizing` - Email organization while online shopping
+**Advanced Slacking Techniques:**
+
+4. `bathroom_break` - Bathroom break with phone browsing
+5. `coffee_mission` - Coffee run around the office
+6. `urgent_call` - Fake urgent phone call
+7. `deep_thinking` - Pretend to think deeply while spacing out
+8. `email_organizing` - Email organization while online shopping
 
 ### State Management System
 

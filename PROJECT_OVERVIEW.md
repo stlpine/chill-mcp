@@ -16,7 +16,7 @@ ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take break
 
 ```
 chill-mcp/
-├── main.py                         # ⭐ Main MCP server (219 lines)
+├── main.py                         # ⭐ Main MCP server (243 lines)
 ├── requirements.txt                # Dependencies (fastmcp)
 ├── LICENSE                         # MIT License
 ├── README.md                       # User documentation
@@ -58,9 +58,9 @@ python tests/validate_format.py
 
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
-| `main.py` | MCP server implementation | 219 | ⭐⭐⭐ |
+| `main.py` | MCP server implementation | 243 | ⭐⭐⭐ |
 | `README.md` | User guide & documentation | ~280 | ⭐⭐⭐ |
-| `CLAUDE.md` | Claude Desktop integration | ~300 | ⭐⭐⭐ |
+| `CLAUDE.md` | Development guide for Claude Code | ~500 | ⭐⭐⭐ |
 | `requirements.txt` | Dependencies | 1 | ⭐⭐⭐ |
 | `spec/PRE_MISSION.md` | Hackathon requirements | ~330 | ⭐⭐ |
 | `docs/TESTING.md` | Testing guide | ~300 | ⭐⭐ |
@@ -103,7 +103,7 @@ python tests/validate_format.py
 | Document | Read If You Want To... |
 |----------|------------------------|
 | `README.md` | Get started, learn features, see examples |
-| `CLAUDE.md` | ⭐ Use ChillMCP with Claude Desktop |
+| `CLAUDE.md` | ⭐ Develop or modify ChillMCP (developer guide) |
 | `spec/PRE_MISSION.md` | Understand the hackathon requirements |
 | `spec/IMPLEMENTATION_PLAN.md` | See the implementation strategy |
 | `spec/IMPLEMENTATION_SUMMARY.md` | Review validation results & checklist |

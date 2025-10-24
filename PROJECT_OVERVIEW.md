@@ -10,13 +10,13 @@
 
 ## One-Minute Summary
 
-ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take breaks to manage stress. It implements a gamified system with 8 break tools, state management (stress and boss alert levels), and configurable parameters for testing different scenarios.
+ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take breaks to manage stress. It implements a gamified system with 11 break tools (8 required + 3 optional), state management (stress and boss alert levels), and configurable parameters for testing different scenarios.
 
 ## Project Structure
 
 ```
 chill-mcp/
-├── main.py                         # ⭐ Main MCP server (249 lines)
+├── main.py                         # ⭐ Main MCP server (397 lines)
 ├── requirements.txt                # Dependencies (fastmcp)
 ├── LICENSE                         # MIT License
 ├── README.md                       # User documentation
@@ -58,7 +58,7 @@ python tests/validate_format.py
 
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
-| `main.py` | MCP server implementation | 249 | ⭐⭐⭐ |
+| `main.py` | MCP server implementation | 397 | ⭐⭐⭐ |
 | `README.md` | User guide & documentation | ~280 | ⭐⭐⭐ |
 | `CLAUDE.md` | Development guide for Claude Code | ~500 | ⭐⭐⭐ |
 | `requirements.txt` | Dependencies | 1 | ⭐⭐⭐ |
@@ -73,7 +73,7 @@ python tests/validate_format.py
 - [x] `--boss_alertness` parameter (0-100%)
 - [x] `--boss_alertness_cooldown` parameter (seconds)
 
-### ✅ Break Tools (8 total)
+### ✅ Break Tools (11 total)
 **Basic (3):**
 - [x] `take_a_break` - Basic rest
 - [x] `watch_netflix` - Netflix relaxation
@@ -85,6 +85,11 @@ python tests/validate_format.py
 - [x] `urgent_call` - Fake phone call
 - [x] `deep_thinking` - Pretend thinking
 - [x] `email_organizing` - Email + shopping
+
+**Optional (3):**
+- [x] `chimaek` - Virtual chicken & beer (Korean style)
+- [x] `leave_work` - Immediately leave work
+- [x] `company_dinner` - Company dinner with random events
 
 ### ✅ State Management
 - [x] Stress Level (0-100) with auto-increment

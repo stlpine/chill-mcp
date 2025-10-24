@@ -40,10 +40,11 @@ main.py (307 lines)
 │   ├── Applies 20s delay if boss_alert_level == 5
 │   └── Calls format_response() with state values
 │
-└── 8 MCP Tools (@mcp.tool decorators)
+└── 11 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
-    └── Advanced: bathroom_break, coffee_mission, urgent_call,
-                  deep_thinking, email_organizing
+    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
+    │             deep_thinking, email_organizing
+    └── Optional: chimaek, leave_work, company_dinner
 ```
 
 ## File Structure
@@ -145,7 +146,7 @@ python -m py_compile main.py
 3. **Thread Safety** (REQUIRED - concurrent access)
    - All state access must use `with self.lock:` context manager
    - Background thread runs continuously
-   - Private methods like _update_stress() are called with lock already held
+   - Private methods like \_update_stress() are called with lock already held
    - Implementation: ChillState class lines 26-93 in main.py
 
 ### State Management Logic
@@ -154,7 +155,7 @@ python -m py_compile main.py
 
 - Auto-increments: 1+ points per minute (elapsed time / 60)
 - Decreases on break: random(1, 100)
-- Implementation: lines 57-68 (_update_stress), 79-81 (reduction in take_break)
+- Implementation: lines 57-68 (\_update_stress), 79-81 (reduction in take_break)
 
 **Boss Alert Level (0-5):**
 
@@ -222,6 +223,7 @@ def new_tool() -> str:
 ```
 
 **Documentation to update:**
+
 - README.md: Add to features list
 - CLAUDE.md: Update tool count in Quick Architecture Overview
 - PROJECT_OVERVIEW.md: Add to Features Checklist
@@ -327,6 +329,7 @@ python tests/test_chillmcp.py
 ### When to Update Documentation
 
 **Always update documentation when:**
+
 1. Adding/removing/modifying tools
 2. Changing state management logic
 3. Modifying response format
@@ -337,17 +340,17 @@ python tests/test_chillmcp.py
 
 ### Which Documents to Update
 
-| Change Type | Documents to Check/Update |
-|-------------|---------------------------|
-| **Code changes** | CLAUDE.md (line numbers), docs/ARCHITECTURE.md |
-| **New tools** | README.md (features list), PROJECT_OVERVIEW.md (checklist) |
-| **State logic** | README.md (state management), docs/ARCHITECTURE.md |
-| **CLI parameters** | README.md, CLAUDE.md, docs/ARCHITECTURE.md |
-| **Response format** | README.md (examples), docs/ARCHITECTURE.md |
-| **File structure** | CLAUDE.md (file structure), PROJECT_OVERVIEW.md |
-| **Testing changes** | docs/TESTING.md, README.md (testing section) |
-| **Dependencies** | README.md, CLAUDE.md (dependencies section) |
-| **Line count changes** | CLAUDE.md, PROJECT_OVERVIEW.md |
+| Change Type            | Documents to Check/Update                                  |
+| ---------------------- | ---------------------------------------------------------- |
+| **Code changes**       | CLAUDE.md (line numbers), docs/ARCHITECTURE.md             |
+| **New tools**          | README.md (features list), PROJECT_OVERVIEW.md (checklist) |
+| **State logic**        | README.md (state management), docs/ARCHITECTURE.md         |
+| **CLI parameters**     | README.md, CLAUDE.md, docs/ARCHITECTURE.md                 |
+| **Response format**    | README.md (examples), docs/ARCHITECTURE.md                 |
+| **File structure**     | CLAUDE.md (file structure), PROJECT_OVERVIEW.md            |
+| **Testing changes**    | docs/TESTING.md, README.md (testing section)               |
+| **Dependencies**       | README.md, CLAUDE.md (dependencies section)                |
+| **Line count changes** | CLAUDE.md, PROJECT_OVERVIEW.md                             |
 
 ### Documentation Update Workflow
 
@@ -377,17 +380,20 @@ wc -l main.py
 ### Common Documentation Inconsistencies to Avoid
 
 1. **Line counts** - Update everywhere when main.py changes
+
    - CLAUDE.md: "main.py (X lines)" in Quick Architecture Overview
    - CLAUDE.md: "Main code: `main.py` (lines 1-X)" in Quick Reference
    - PROJECT_OVERVIEW.md: "Main MCP server (X lines)" in Project Structure
    - PROJECT_OVERVIEW.md: Line count in Key Files table
 
 2. **Tool lists** - Keep synchronized across files
+
    - README.md: Features section with all 8 tools
    - CLAUDE.md: Quick Architecture Overview tool list
    - PROJECT_OVERVIEW.md: Features Checklist
 
 3. **File descriptions** - Use consistent terminology
+
    - CLAUDE.md should be described as "Development guide for Claude Code"
    - Not "Claude Desktop integration guide" or other variants
 
@@ -561,6 +567,7 @@ if elapsed >= threshold:
 Before committing changes:
 
 **Code Validation:**
+
 - [ ] CLI parameters work: `python main.py --help`
 - [ ] Syntax valid: `python -m py_compile main.py`
 - [ ] Format tests pass: `python tests/validate_format.py`
@@ -570,6 +577,7 @@ Before committing changes:
 - [ ] State bounds enforced (0-100 stress, 0-5 boss)
 
 **Documentation Validation:**
+
 - [ ] Line counts updated in CLAUDE.md and PROJECT_OVERVIEW.md
 - [ ] Tool lists synchronized across README.md, CLAUDE.md, PROJECT_OVERVIEW.md
 - [ ] File descriptions consistent across all documentation
@@ -582,13 +590,35 @@ Before committing changes:
 
 ### File Locations
 
+<<<<<<< HEAD
+
 - Main code: `main.py` (lines 1-307)
+  ||||||| 39f30a2
+- # Main code: `main.py` (lines 1-249)
+- Main code: `main.py` (lines 1-397)
+  > > > > > > > main
 - CLI parsing: `main.py` (lines 14-20)
+  <<<<<<< HEAD
 - State class: `main.py` (lines 26-93)
 - Response formatting: `main.py` (lines 100-114)
   - format_response (pure): lines 100-103
   - take_break_and_format (helper): lines 106-114
 - Tools: `main.py` (lines 119-302)
+  ||||||| 39f30a2
+- State class: `main.py` (lines 26-92)
+- Response formatting: `main.py` (lines 98-112)
+  - format_response (pure): lines 98-101
+  - take_break_and_format (helper): lines 104-112
+- # Tools: `main.py` (lines 117-244)
+- State class: `main.py` (lines 26-92)
+- Response formatting: `main.py` (lines 98-112)
+  - format_response (pure): lines 98-101
+  - take_break_and_format (helper): lines 104-112
+- Tools: `main.py` (lines 117-392)
+  - Basic tools: lines 117-183
+  - Advanced tools: lines 187-300
+  - Optional tools: lines 305-392
+    > > > > > > > main
 
 ### Key Variables
 

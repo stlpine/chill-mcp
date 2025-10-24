@@ -304,10 +304,13 @@ chill-mcp/
 │   ├── PRE_MISSION.md              # Formatted mission brief
 │   ├── IMPLEMENTATION_PLAN.md      # Detailed implementation plan
 │   └── IMPLEMENTATION_SUMMARY.md   # Implementation summary & validation
-└── tests/                          # Test suite
-    ├── test_chillmcp.py            # Automated integration tests
-    ├── validate_format.py          # Response format validation
-    └── simple_test.py              # Simple functionality tests
+└── tests/                          # Comprehensive test suite
+    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
+    ├── test_mcp_protocol.py        # MCP protocol compliance
+    ├── test_state_management.py    # State logic (30% of score)
+    ├── test_response_format.py     # Response format validation
+    ├── test_integration_scenarios.py # End-to-end scenarios
+    └── run_all_tests.py            # Master test runner
 ```
 
 ## License

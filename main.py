@@ -21,6 +21,12 @@ parser.add_argument('--boss_alertness_cooldown', type=int, default=300,
                     help='Boss alert cooldown in seconds')
 args = parser.parse_args()
 
+# Validate parameters
+if not (0 <= args.boss_alertness <= 100):
+    parser.error(f"boss_alertness must be between 0 and 100, got {args.boss_alertness}")
+if args.boss_alertness_cooldown < 0:
+    parser.error(f"boss_alertness_cooldown must be non-negative, got {args.boss_alertness_cooldown}")
+
 # Setup logging
 def setup_logging():
     """Setup file-based logging system"""
@@ -124,9 +130,11 @@ class ChillState:
 
             # Check if boss alert should increase
             boss_alert_increased = False
-            if random.randint(0, 100) < self.boss_alertness:
+            if random.randint(0, 100) <= self.boss_alertness:
                 self.boss_alert_level = min(5, self.boss_alert_level + 1)
                 boss_alert_increased = True
+                # Reset cooldown timer when boss alert increases
+                self.last_boss_cooldown_time = datetime.now()
 
             # Reset last break time
             self.last_break_time = datetime.now()

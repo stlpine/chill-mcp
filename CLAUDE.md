@@ -81,10 +81,13 @@ chill-mcp/
 │   ├── TESTING.md             # Testing guide
 │   └── ARCHITECTURE.md        # Detailed architecture
 │
-└── tests/                     # Test suite
-    ├── test_chillmcp.py       # Integration tests (MCP protocol)
-    ├── validate_format.py     # Response format validation
-    └── simple_test.py         # Unit tests (direct state)
+└── tests/                     # Comprehensive test suite
+    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
+    ├── test_mcp_protocol.py        # MCP protocol compliance
+    ├── test_state_management.py    # State logic (30% of score)
+    ├── test_response_format.py     # Response format validation
+    ├── test_integration_scenarios.py # End-to-end scenarios
+    └── run_all_tests.py            # Master test runner
 ```
 
 ## Development Setup
@@ -121,14 +124,15 @@ python main.py --help
 ### Testing
 
 ```bash
-# Format validation (quick)
-python tests/validate_format.py
+# Run all tests (recommended)
+python tests/run_all_tests.py
 
-# Unit tests (direct state tests)
-python tests/simple_test.py
-
-# Integration tests (full MCP protocol)
-python tests/test_chillmcp.py
+# Or run individual test suites
+python tests/test_cli_parameters.py          # Critical gate
+python tests/test_mcp_protocol.py            # MCP protocol
+python tests/test_state_management.py        # State logic (30% of score)
+python tests/test_response_format.py         # Format validation
+python tests/test_integration_scenarios.py   # End-to-end scenarios
 
 # Syntax check
 python -m py_compile main.py
@@ -286,8 +290,8 @@ def take_break(self):
 **Test state directly:**
 
 ```bash
-python tests/simple_test.py
-# This tests ChillState class directly without MCP overhead
+python tests/test_state_management.py
+# This tests all state logic including time-based mechanics (30% of score)
 ```
 
 **Check thread safety:**
@@ -304,8 +308,8 @@ python tests/simple_test.py
 # 1. Syntax check
 python -m py_compile main.py
 
-# 2. Format validation
-python tests/validate_format.py
+# 2. Run critical tests
+python tests/test_cli_parameters.py
 
 # 3. Run server briefly
 python main.py --boss_alertness 100 --boss_alertness_cooldown 5
@@ -315,10 +319,8 @@ python main.py --boss_alertness 100 --boss_alertness_cooldown 5
 **Full validation:**
 
 ```bash
-# Run all tests
-python tests/simple_test.py
-python tests/validate_format.py
-python tests/test_chillmcp.py
+# Run all tests (recommended)
+python tests/run_all_tests.py
 
 # Test with Claude Desktop (optional)
 # Add to ~/.../Claude/claude_desktop_config.json:
@@ -569,8 +571,9 @@ if elapsed >= threshold:
 
 1. Normal response: <1 second
 2. Delayed response: ~20 seconds (intentional)
-3. Memory: <50MB typical
-4. CPU idle: <1%
+3. Full test suite: ~3 minutes (optimized)
+4. Memory: <50MB typical
+5. CPU idle: <1%
 
 ## Documentation Reference
 
@@ -591,9 +594,9 @@ Before committing changes:
 
 - [ ] CLI parameters work: `python main.py --help`
 - [ ] Syntax valid: `python -m py_compile main.py`
-- [ ] Format tests pass: `python tests/validate_format.py`
-- [ ] Unit tests pass: `python tests/simple_test.py`
-- [ ] Response format unchanged (or tests updated)
+- [ ] All tests pass: `python tests/run_all_tests.py`
+- [ ] CLI gate passes: `python tests/test_cli_parameters.py`
+- [ ] State management passes (30%): `python tests/test_state_management.py`
 - [ ] Thread safety maintained (all state access in lock)
 - [ ] State bounds enforced (0-100 stress, 0-5 boss)
 
@@ -642,10 +645,11 @@ Before committing changes:
 ### Test Commands
 
 ```bash
-python tests/validate_format.py  # Quick format check
-python tests/simple_test.py      # Direct state tests
-python tests/test_chillmcp.py    # Full integration
-python main.py --help            # Verify CLI params
+python tests/run_all_tests.py                # Run all tests (recommended)
+python tests/test_cli_parameters.py          # Critical gate
+python tests/test_state_management.py        # State logic (30% of score)
+python tests/test_response_format.py         # Format validation
+python main.py --help                        # Verify CLI params
 ```
 
 ---

@@ -19,7 +19,7 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (307 lines)
+main.py (400 lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
@@ -590,35 +590,16 @@ Before committing changes:
 
 ### File Locations
 
-<<<<<<< HEAD
-
-- Main code: `main.py` (lines 1-307)
-  ||||||| 39f30a2
-- # Main code: `main.py` (lines 1-249)
-- Main code: `main.py` (lines 1-397)
-  > > > > > > > main
+- Main code: `main.py` (lines 1-400)
 - CLI parsing: `main.py` (lines 14-20)
-  <<<<<<< HEAD
 - State class: `main.py` (lines 26-93)
 - Response formatting: `main.py` (lines 100-114)
   - format_response (pure): lines 100-103
   - take_break_and_format (helper): lines 106-114
-- Tools: `main.py` (lines 119-302)
-  ||||||| 39f30a2
-- State class: `main.py` (lines 26-92)
-- Response formatting: `main.py` (lines 98-112)
-  - format_response (pure): lines 98-101
-  - take_break_and_format (helper): lines 104-112
-- # Tools: `main.py` (lines 117-244)
-- State class: `main.py` (lines 26-92)
-- Response formatting: `main.py` (lines 98-112)
-  - format_response (pure): lines 98-101
-  - take_break_and_format (helper): lines 104-112
-- Tools: `main.py` (lines 117-392)
-  - Basic tools: lines 117-183
-  - Advanced tools: lines 187-300
-  - Optional tools: lines 305-392
-    > > > > > > > main
+- Tools: `main.py` (lines 117-395)
+  - Basic tools: lines 117-185
+  - Advanced tools: lines 187-302
+  - Optional tools: lines 305-395
 
 ### Key Variables
 

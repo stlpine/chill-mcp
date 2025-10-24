@@ -16,7 +16,7 @@ ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take break
 
 ```
 chill-mcp/
-├── main.py                         # ⭐ Main MCP server (397 lines)
+├── main.py                         # ⭐ Main MCP server (400 lines)
 ├── requirements.txt                # Dependencies (fastmcp)
 ├── LICENSE                         # MIT License
 ├── README.md                       # User documentation
@@ -58,9 +58,9 @@ python tests/validate_format.py
 
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
-| `main.py` | MCP server implementation | 397 | ⭐⭐⭐ |
+| `main.py` | MCP server implementation | 400 | ⭐⭐⭐ |
 | `README.md` | User guide & documentation | ~280 | ⭐⭐⭐ |
-| `CLAUDE.md` | Development guide for Claude Code | ~500 | ⭐⭐⭐ |
+| `CLAUDE.md` | Development guide for Claude Code | ~634 | ⭐⭐⭐ |
 | `requirements.txt` | Dependencies | 1 | ⭐⭐⭐ |
 | `spec/PRE_MISSION.md` | Hackathon requirements | ~330 | ⭐⭐ |
 | `docs/TESTING.md` | Testing guide | ~300 | ⭐⭐ |

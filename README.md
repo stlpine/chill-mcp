@@ -47,7 +47,7 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 
 ## Features
 
-### 8 Revolutionary Break Tools
+### 9 Revolutionary Break Tools
 
 **Basic Tools:**
 
@@ -62,6 +62,10 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 6. `urgent_call` - Fake urgent phone call
 7. `deep_thinking` - Pretend to think deeply while spacing out
 8. `email_organizing` - Email organization while online shopping
+
+**Status Tools:**
+
+9. `check_stress_status` - Check current stress and boss alert levels without taking a break
 
 ### State Management System
 
@@ -221,7 +225,8 @@ main.py
 │   ├── Thread-safe operations (with Lock)
 │   └── Background cooldown thread
 │
-├── 8 Break tools (@mcp.tool decorators)
+├── 9 Break tools (@mcp.tool decorators)
+│   ├── 8 break tools + 1 status tool
 │   ├── Each calls format_response()
 │   └── Returns formatted MCP response
 │
@@ -256,7 +261,7 @@ main.py
 - [x] Server starts with `python main.py`
 - [x] `--boss_alertness` parameter recognized and functional
 - [x] `--boss_alertness_cooldown` parameter recognized and functional
-- [x] All 8 break tools implemented (3 basic + 5 advanced)
+- [x] All 9 tools implemented (3 basic + 5 advanced + 1 status)
 - [x] Stress Level auto-increments over time
 - [x] Boss Alert Level increases based on probability
 - [x] Boss Alert Level auto-decreases on cooldown

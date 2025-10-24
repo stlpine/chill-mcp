@@ -56,14 +56,12 @@ class ChillState:
 
     def update_stress(self):
         """Auto-increment stress based on time elapsed since last break"""
-        with self.lock:
-            now = datetime.now()
-            elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
-
-            # Add minimum 1 point per minute
-            stress_increase = int(elapsed_minutes)
-            if stress_increase > 0:
-                self.stress_level = min(100, self.stress_level + stress_increase)
+        now = datetime.now()
+        elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
+        # Add minimum 1 point per minute
+        stress_increase = int(elapsed_minutes)
+        if stress_increase > 0:
+            self.stress_level = min(100, self.stress_level + stress_increase)
 
     def take_break(self) -> tuple[int, int, str]:
         """
@@ -298,6 +296,39 @@ def email_organizing() -> str:
         random.choice(activities),
         random.choice(summaries)
     )
+
+
+@mcp.tool()
+def check_stress_status() -> str:
+    """Check current stress and boss alert levels without taking a break"""
+    with state.lock:
+        # Update stress based on time elapsed
+        state.update_stress()
+        current_stress = state.stress_level
+        current_boss = state.boss_alert_level
+    
+    # Determine status emoji and message based on levels
+    if current_stress >= 80:
+        emoji = "😰"
+        stress_msg = "Critical stress levels! Emergency break needed!"
+    elif current_stress >= 50:
+        emoji = "😅"
+        stress_msg = "Moderate stress building up..."
+    elif current_stress >= 20:
+        emoji = "😌"
+        stress_msg = "Slightly stressed but manageable"
+    else:
+        emoji = "😎"
+        stress_msg = "Chill and relaxed!"
+    
+    if current_boss >= 4:
+        boss_msg = "🚨 Boss is VERY suspicious! Be careful!"
+    elif current_boss >= 2:
+        boss_msg = "⚠️ Boss is getting suspicious..."
+    else:
+        boss_msg = "✅ Boss is not paying attention"
+    
+    return f"{emoji} Current Status Check\n\n{stress_msg}\n{boss_msg}\n\n📊 Stress Level: {current_stress}/100\n👀 Boss Alert Level: {current_boss}/5"
 
 
 if __name__ == "__main__":

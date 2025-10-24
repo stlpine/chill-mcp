@@ -123,10 +123,17 @@ def take_a_break() -> str:
         "Just vibing for a bit...",
         "Closing eyes and taking deep breaths..."
     ]
+    summaries = [
+        "Mandatory wellness micro-moment",
+        "Strategic energy reallocation session",
+        "Self-care is productivity (trust me bro)",
+        "Ergonomic recalibration procedure",
+        "Definitely not just staring into space"
+    ]
     return take_break_and_format(
         "😌",
         random.choice(messages),
-        "Basic break to reduce stress"
+        random.choice(summaries)
     )
 
 
@@ -139,10 +146,17 @@ def watch_netflix() -> str:
         "Getting lost in a documentary about penguins...",
         "Re-watching The Office for the 47th time..."
     ]
+    summaries = [
+        "Professional content analysis session",
+        "Cultural research and market trend analysis",
+        "Totally justified entertainment industry study",
+        "Quality assurance testing for streaming platforms",
+        "Educational cinematography appreciation break"
+    ]
     return take_break_and_format(
         "📺",
         random.choice(shows),
-        "Netflix and chill (literally)"
+        random.choice(summaries)
     )
 
 
@@ -155,10 +169,17 @@ def show_meme() -> str:
         "This meme perfectly describes my life right now...",
         "Can't stop laughing at this dank meme!"
     ]
+    summaries = [
+        "Internet culture research and analysis",
+        "Modern humor linguistics study session",
+        "Visual comedy quality assessment protocol",
+        "Mandatory dopamine restoration procedure",
+        "Social media trend monitoring (work-related, obviously)"
+    ]
     return take_break_and_format(
         "😂",
         random.choice(memes),
-        "Meme appreciation session"
+        random.choice(summaries)
     )
 
 
@@ -173,10 +194,17 @@ def bathroom_break() -> str:
         "Checking Twitter... I mean X... on the throne...",
         "Playing mobile games in my private sanctuary..."
     ]
+    summaries = [
+        "Biological necessity with strategic phone time",
+        "Mandatory hydration cycle completion ritual",
+        "Private contemplation chamber session",
+        "Totally legitimate 15-minute nature break",
+        "Constitutional rights exercise (literally)"
+    ]
     return take_break_and_format(
         "🚽",
         random.choice(activities),
-        "Bathroom break with phone browsing"
+        random.choice(summaries)
     )
 
 
@@ -189,10 +217,17 @@ def coffee_mission() -> str:
         "Visiting every floor to find the best coffee machine...",
         "Coffee mission accomplished! Took 30 minutes for a 2-minute task..."
     ]
+    summaries = [
+        "Critical caffeine infrastructure maintenance",
+        "Cross-departmental networking via beverage station",
+        "Productivity enhancement liquid acquisition",
+        "Strategic office exploration under coffee pretense",
+        "Team bonding disguised as coffee procurement"
+    ]
     return take_break_and_format(
         "☕",
         random.choice(missions),
-        "Strategic coffee acquisition mission"
+        random.choice(summaries)
     )
 
 
@@ -205,10 +240,17 @@ def urgent_call() -> str:
         "Emergency call! *Actually calling mom to say hi*",
         "Very important business call... *ordering lunch*"
     ]
+    summaries = [
+        "High-priority telecommunications event",
+        "Critical stakeholder engagement session",
+        "Urgent family liaison duties (totally work-related)",
+        "Emergency vendor coordination meeting",
+        "Time-sensitive audio conference (with fresh air bonus)"
+    ]
     return take_break_and_format(
         "📞",
         random.choice(calls),
-        "Urgent call that definitely isn't fake"
+        random.choice(summaries)
     )
 
 
@@ -221,10 +263,17 @@ def deep_thinking() -> str:
         "Deep in thought about architecture... of my Minecraft house...",
         "Pondering the mysteries of the universe... and what's for lunch..."
     ]
+    summaries = [
+        "Strategic problem decomposition meditation",
+        "High-level architectural contemplation session",
+        "Advanced cognitive processing interval",
+        "Critical thinking enhancement period",
+        "Philosophical debugging approach (looks productive)"
+    ]
     return take_break_and_format(
         "🤔",
         random.choice(thoughts),
-        "Deep contemplation session (totally not spacing out)"
+        random.choice(summaries)
     )
 
 
@@ -237,10 +286,17 @@ def email_organizing() -> str:
         "Processing emails... and processing my online shopping wishlist...",
         "Email management time... added 15 items to cart, deleted 2 emails..."
     ]
+    summaries = [
+        "Multi-tasking efficiency optimization session",
+        "Inbox zero pursuit with e-commerce research",
+        "Digital decluttering meets market analysis",
+        "Email triage combined with retail reconnaissance",
+        "Productive procrastination master class"
+    ]
     return take_break_and_format(
         "📧",
         random.choice(activities),
-        "Email organization (with retail therapy)"
+        random.choice(summaries)
     )
 
 

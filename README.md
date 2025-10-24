@@ -47,7 +47,15 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 
 ## Features
 
-### 11 Revolutionary Break Tools
+### 📝 Comprehensive Logging System
+
+- **File-based logging**: All activities logged to `logs/chill-mcp-YYYYMMDD.log`
+- **State tracking**: Stress level and boss alert level changes are logged
+- **Tool usage**: All MCP tool calls are logged with timestamps
+- **Background events**: Boss alert cooldown and auto-stress increases are logged
+- **No stdout interference**: Logging doesn't interfere with MCP stdio protocol
+
+### 12 Revolutionary Break Tools
 
 **Basic Tools:**
 
@@ -63,11 +71,15 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 7. `deep_thinking` - Pretend to think deeply while spacing out
 8. `email_organizing` - Email organization while online shopping
 
+**Status Tools:**
+
+9. `check_stress_status` - Check current stress and boss alert levels without taking a break
+
 **Optional Break Tools (Bonus Features):**
 
-9. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
-10. `leave_work` - Immediately leave work - ultimate stress relief
-11. `company_dinner` - Company dinner (회식) with random events
+10. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
+11. `leave_work` - Immediately leave work - ultimate stress relief
+12. `company_dinner` - Company dinner (회식) with random events
 
 ### State Management System
 
@@ -215,6 +227,7 @@ print(f"Summary: {summary.group(1)}")  # Test break
 - **Transport**: stdio (standard input/output)
 - **State Management**: Thread-safe with `threading.Lock`
 - **Background Task**: Daemon thread for Boss Alert cooldown
+- **Logging**: File-based logging system with daily log rotation
 
 ### Architecture
 
@@ -227,7 +240,8 @@ main.py
 │   ├── Thread-safe operations (with Lock)
 │   └── Background cooldown thread
 │
-├── 8 Break tools (@mcp.tool decorators)
+├── 9 Break tools (@mcp.tool decorators)
+│   ├── 8 break tools + 1 status tool
 │   ├── Each calls format_response()
 │   └── Returns formatted MCP response
 │
@@ -262,7 +276,7 @@ main.py
 - [x] Server starts with `python main.py`
 - [x] `--boss_alertness` parameter recognized and functional
 - [x] `--boss_alertness_cooldown` parameter recognized and functional
-- [x] All 8 break tools implemented (3 basic + 5 advanced)
+- [x] All 9 tools implemented (3 basic + 5 advanced + 1 status)
 - [x] Stress Level auto-increments over time
 - [x] Boss Alert Level increases based on probability
 - [x] Boss Alert Level auto-decreases on cooldown
@@ -284,6 +298,8 @@ chill-mcp/
 ├── mise.toml                       # Mise configuration
 ├── .gitignore                      # Git ignore file
 ├── venv/                           # Virtual environment (gitignored)
+├── logs/                           # Log files (auto-created)
+│   └── chill-mcp-YYYYMMDD.log     # Daily log files
 ├── spec/                           # Project specifications
 │   ├── PRE_MISSION.md              # Formatted mission brief
 │   ├── IMPLEMENTATION_PLAN.md      # Detailed implementation plan

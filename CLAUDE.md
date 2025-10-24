@@ -19,10 +19,15 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (400 lines)
+main.py (500+ lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
+│
+├── Logging System (File-based logging)
+│   ├── setup_logging() - Configures file logging
+│   ├── logs/chill-mcp-YYYYMMDD.log - Daily log files
+│   └── No stdout interference (MCP protocol safe)
 │
 ├── ChillState Class (Thread-safe state management)
 │   ├── State: stress_level (0-100), boss_alert_level (0-5)
@@ -30,6 +35,7 @@ main.py (400 lines)
 │   ├── Timing: last_break_time, last_boss_cooldown_time
 │   ├── Concurrency: threading.Lock
 │   ├── Background: daemon thread for auto-cooldown
+│   ├── Logging: All state changes logged
 │   └── _update_stress() - Private method (called with lock held)
 │
 ├── format_response() (Pure formatter - no side effects)
@@ -40,11 +46,19 @@ main.py (400 lines)
 │   ├── Applies 20s delay if boss_alert_level == 5
 │   └── Calls format_response() with state values
 │
+└── 12 MCP Tools (@mcp.tool decorators)
+    ├── Basic: take_a_break, watch_netflix, show_meme
+    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
+                  deep_thinking, email_organizing
+    ├── Status: check_stress_status
+    └── Optional: chimaek, leave_work, company_dinner
+=======
 └── 11 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
     ├── Advanced: bathroom_break, coffee_mission, urgent_call,
     │             deep_thinking, email_organizing
     └── Optional: chimaek, leave_work, company_dinner
+>>>>>>> origin/main
 ```
 
 ## File Structure
@@ -444,6 +458,13 @@ grep -n "boss_alertness" README.md CLAUDE.md PROJECT_OVERVIEW.md docs/ARCHITECTU
 - Automatic protocol handling
 - Declarative tool registration
 - Built-in stdio support
+
+**Logging System:**
+
+- `logging` - Python standard library logging
+- File-based logging to avoid stdout interference
+- Daily log rotation with date-based filenames
+- Comprehensive state change tracking
 
 ## Code Patterns & Conventions
 

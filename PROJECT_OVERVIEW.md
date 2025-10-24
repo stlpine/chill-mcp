@@ -16,7 +16,7 @@ ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take break
 
 ```
 chill-mcp/
-├── main.py                         # ⭐ Main MCP server (400 lines)
+├── main.py                         # ⭐ Main MCP server (500+ lines)
 ├── requirements.txt                # Dependencies (fastmcp)
 ├── LICENSE                         # MIT License
 ├── README.md                       # User documentation
@@ -58,7 +58,7 @@ python tests/validate_format.py
 
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
-| `main.py` | MCP server implementation | 400 | ⭐⭐⭐ |
+| `main.py` | MCP server implementation | 500+ | ⭐⭐⭐ |
 | `README.md` | User guide & documentation | ~280 | ⭐⭐⭐ |
 | `CLAUDE.md` | Development guide for Claude Code | ~634 | ⭐⭐⭐ |
 | `requirements.txt` | Dependencies | 1 | ⭐⭐⭐ |
@@ -73,7 +73,7 @@ python tests/validate_format.py
 - [x] `--boss_alertness` parameter (0-100%)
 - [x] `--boss_alertness_cooldown` parameter (seconds)
 
-### ✅ Break Tools (11 total)
+### ✅ Break Tools (12 total)
 **Basic (3):**
 - [x] `take_a_break` - Basic rest
 - [x] `watch_netflix` - Netflix relaxation
@@ -86,10 +86,14 @@ python tests/validate_format.py
 - [x] `deep_thinking` - Pretend thinking
 - [x] `email_organizing` - Email + shopping
 
+**Status (1):**
+- [x] `check_stress_status` - View current state without taking break
+
 **Optional (3):**
 - [x] `chimaek` - Virtual chicken & beer (Korean style)
 - [x] `leave_work` - Immediately leave work
 - [x] `company_dinner` - Company dinner with random events
+>>>>>>> origin/main
 
 ### ✅ State Management
 - [x] Stress Level (0-100) with auto-increment
@@ -182,7 +186,7 @@ $ python tests/validate_format.py
 | Criterion | Weight | Status | Notes |
 |-----------|--------|--------|-------|
 | **CLI Parameters** | MUST PASS | ✅ PASS | Both params functional |
-| **Functionality** | 40% | ✅ PASS | All 8 tools implemented |
+| **Functionality** | 40% | ✅ PASS | All 9 tools implemented |
 | **State Management** | 30% | ✅ PASS | Accurate, thread-safe |
 | **Creativity** | 20% | ✅ PASS | Varied humorous messages |
 | **Code Quality** | 10% | ✅ PASS | Clean, documented |

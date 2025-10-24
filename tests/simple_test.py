@@ -24,7 +24,7 @@ old_argv = sys.argv
 sys.argv = ['main.py', '--boss_alertness', '100', '--boss_alertness_cooldown', '10']
 
 # Now we can import our main module
-from main import state, format_response
+from main import state, take_break_and_format
 
 # Restore argv
 sys.argv = old_argv
@@ -43,7 +43,7 @@ print("  ✓ State initialized correctly")
 
 # Test 2: Response format
 print("\nTest 2: Response Format Validation")
-response = format_response(
+response = take_break_and_format(
     "🎮",
     "Testing the response format",
     "Test break summary"

@@ -95,15 +95,21 @@ class ChillState:
 state = ChillState(args.boss_alertness, args.boss_alertness_cooldown)
 
 
-def format_response(emoji: str, message: str, break_summary: str) -> str:
-    """Format the response according to MCP specification"""
+def format_response(emoji: str, message: str, break_summary: str,
+                   stress: int, boss: int) -> str:
+    """Pure function - formats the response according to MCP specification"""
+    return f"{emoji} {message}\n\nBreak Summary: {break_summary}\nStress Level: {stress}\nBoss Alert Level: {boss}"
+
+
+def take_break_and_format(emoji: str, message: str, break_summary: str) -> str:
+    """Helper that handles state mutation, delay, and formatting"""
     stress, boss, should_delay = state.take_break()
 
     # Apply 20-second delay if boss alert level is 5
     if should_delay:
         time.sleep(20)
 
-    return f"{emoji} {message}\n\nBreak Summary: {break_summary}\nStress Level: {stress}\nBoss Alert Level: {boss}"
+    return format_response(emoji, message, break_summary, stress, boss)
 
 
 # Basic Break Tools
@@ -117,7 +123,7 @@ def take_a_break() -> str:
         "Just vibing for a bit...",
         "Closing eyes and taking deep breaths..."
     ]
-    return format_response(
+    return take_break_and_format(
         "😌",
         random.choice(messages),
         "Basic break to reduce stress"
@@ -133,7 +139,7 @@ def watch_netflix() -> str:
         "Getting lost in a documentary about penguins...",
         "Re-watching The Office for the 47th time..."
     ]
-    return format_response(
+    return take_break_and_format(
         "📺",
         random.choice(shows),
         "Netflix and chill (literally)"
@@ -149,7 +155,7 @@ def show_meme() -> str:
         "This meme perfectly describes my life right now...",
         "Can't stop laughing at this dank meme!"
     ]
-    return format_response(
+    return take_break_and_format(
         "😂",
         random.choice(memes),
         "Meme appreciation session"
@@ -167,7 +173,7 @@ def bathroom_break() -> str:
         "Checking Twitter... I mean X... on the throne...",
         "Playing mobile games in my private sanctuary..."
     ]
-    return format_response(
+    return take_break_and_format(
         "🚽",
         random.choice(activities),
         "Bathroom break with phone browsing"
@@ -183,7 +189,7 @@ def coffee_mission() -> str:
         "Visiting every floor to find the best coffee machine...",
         "Coffee mission accomplished! Took 30 minutes for a 2-minute task..."
     ]
-    return format_response(
+    return take_break_and_format(
         "☕",
         random.choice(missions),
         "Strategic coffee acquisition mission"
@@ -199,7 +205,7 @@ def urgent_call() -> str:
         "Emergency call! *Actually calling mom to say hi*",
         "Very important business call... *ordering lunch*"
     ]
-    return format_response(
+    return take_break_and_format(
         "📞",
         random.choice(calls),
         "Urgent call that definitely isn't fake"
@@ -215,7 +221,7 @@ def deep_thinking() -> str:
         "Deep in thought about architecture... of my Minecraft house...",
         "Pondering the mysteries of the universe... and what's for lunch..."
     ]
-    return format_response(
+    return take_break_and_format(
         "🤔",
         random.choice(thoughts),
         "Deep contemplation session (totally not spacing out)"
@@ -231,7 +237,7 @@ def email_organizing() -> str:
         "Processing emails... and processing my online shopping wishlist...",
         "Email management time... added 15 items to cart, deleted 2 emails..."
     ]
-    return format_response(
+    return take_break_and_format(
         "📧",
         random.choice(activities),
         "Email organization (with retail therapy)"

@@ -19,7 +19,7 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (243 lines)
+main.py (249 lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
@@ -31,10 +31,13 @@ main.py (243 lines)
 │   ├── Concurrency: threading.Lock
 │   └── Background: daemon thread for auto-cooldown
 │
-├── format_response() (Response formatter)
+├── format_response() (Pure formatter - no side effects)
+│   └── Returns formatted string (takes stress/boss as params)
+│
+├── take_break_and_format() (State mutation + formatting)
 │   ├── Calls state.take_break()
 │   ├── Applies 20s delay if boss_alert_level == 5
-│   └── Returns formatted string
+│   └── Calls format_response() with state values
 │
 └── 8 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
@@ -194,7 +197,7 @@ def _start_cooldown_thread(self):
 ### Adding a New Break Tool
 
 1. Add tool function with @mcp.tool() decorator
-2. Use format_response() for consistent output
+2. Use take_break_and_format() for consistent output
 3. Provide varied messages (list + random.choice)
 4. **Update documentation** (see Documentation Maintenance section)
 
@@ -209,7 +212,7 @@ def new_tool() -> str:
         "Message variant 2...",
         "Message variant 3..."
     ]
-    return format_response(
+    return take_break_and_format(
         "🎮",  # emoji
         random.choice(messages),  # activity message
         "Summary text"  # break summary
@@ -464,7 +467,7 @@ self.boss_alert_level = min(5, max(0, new_value))  # 0-5
 def tool_name() -> str:
     """Docstring becomes tool description"""
     messages = [...]  # Multiple variants for variety
-    return format_response(emoji, random.choice(messages), summary)
+    return take_break_and_format(emoji, random.choice(messages), summary)
 ```
 
 ### Time-Based Logic Pattern
@@ -577,11 +580,13 @@ Before committing changes:
 
 ### File Locations
 
-- Main code: `main.py` (lines 1-243)
+- Main code: `main.py` (lines 1-249)
 - CLI parsing: `main.py` (lines 14-20)
 - State class: `main.py` (lines 26-92)
-- Response format: `main.py` (lines 98-106)
-- Tools: `main.py` (lines 109-238)
+- Response formatting: `main.py` (lines 98-112)
+  - format_response (pure): lines 98-101
+  - take_break_and_format (helper): lines 104-112
+- Tools: `main.py` (lines 117-244)
 
 ### Key Variables
 
@@ -596,7 +601,8 @@ Before committing changes:
 
 - `ChillState.update_stress()` - Auto-increment stress
 - `ChillState.take_break()` - Process break, return state
-- `format_response()` - Format MCP response string
+- `format_response()` - Pure formatter (no side effects)
+- `take_break_and_format()` - State mutation + formatting helper
 - `_start_cooldown_thread()` - Start background daemon
 
 ### Test Commands

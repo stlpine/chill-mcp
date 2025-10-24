@@ -231,7 +231,7 @@ main.py
 
 ### Key Functions
 
-- **`ChillState.update_stress()`**: Auto-increments stress based on time elapsed
+- **`ChillState._update_stress()`**: Private method that auto-increments stress (called with lock held)
 - **`ChillState.take_break()`**: Main break processing logic
 - **`format_response()`**: Formats tool responses to MCP specification
 - **Background thread**: Auto-decreases Boss Alert Level on cooldown schedule

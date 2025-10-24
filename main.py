@@ -54,16 +54,18 @@ class ChillState:
         thread = threading.Thread(target=cooldown_worker, daemon=True)
         thread.start()
 
-    def update_stress(self):
-        """Auto-increment stress based on time elapsed since last break"""
-        with self.lock:
-            now = datetime.now()
-            elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
+    def _update_stress(self):
+        """
+        Auto-increment stress based on time elapsed since last break.
+        PRIVATE: Must be called with self.lock held.
+        """
+        now = datetime.now()
+        elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
 
-            # Add minimum 1 point per minute
-            stress_increase = int(elapsed_minutes)
-            if stress_increase > 0:
-                self.stress_level = min(100, self.stress_level + stress_increase)
+        # Add minimum 1 point per minute
+        stress_increase = int(elapsed_minutes)
+        if stress_increase > 0:
+            self.stress_level = min(100, self.stress_level + stress_increase)
 
     def take_break(self) -> tuple[int, int, str]:
         """
@@ -72,7 +74,7 @@ class ChillState:
         """
         with self.lock:
             # Update stress first (from time elapsed)
-            self.update_stress()
+            self._update_stress()
 
             # Reduce stress by random amount (1-100)
             stress_reduction = random.randint(1, 100)

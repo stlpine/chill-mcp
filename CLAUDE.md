@@ -19,7 +19,7 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (249 lines)
+main.py (397 lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
@@ -39,10 +39,11 @@ main.py (249 lines)
 │   ├── Applies 20s delay if boss_alert_level == 5
 │   └── Calls format_response() with state values
 │
-└── 8 MCP Tools (@mcp.tool decorators)
+└── 11 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
-    └── Advanced: bathroom_break, coffee_mission, urgent_call,
-                  deep_thinking, email_organizing
+    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
+    │             deep_thinking, email_organizing
+    └── Optional: chimaek, leave_work, company_dinner
 ```
 
 ## File Structure
@@ -580,13 +581,16 @@ Before committing changes:
 
 ### File Locations
 
-- Main code: `main.py` (lines 1-249)
+- Main code: `main.py` (lines 1-397)
 - CLI parsing: `main.py` (lines 14-20)
 - State class: `main.py` (lines 26-92)
 - Response formatting: `main.py` (lines 98-112)
   - format_response (pure): lines 98-101
   - take_break_and_format (helper): lines 104-112
-- Tools: `main.py` (lines 117-244)
+- Tools: `main.py` (lines 117-392)
+  - Basic tools: lines 117-183
+  - Advanced tools: lines 187-300
+  - Optional tools: lines 305-392
 
 ### Key Variables
 

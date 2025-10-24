@@ -47,7 +47,7 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 
 ## Features
 
-### 8 Revolutionary Break Tools
+### 11 Revolutionary Break Tools
 
 **Basic Tools:**
 
@@ -62,6 +62,12 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 6. `urgent_call` - Fake urgent phone call
 7. `deep_thinking` - Pretend to think deeply while spacing out
 8. `email_organizing` - Email organization while online shopping
+
+**Optional Break Tools (Bonus Features):**
+
+9. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
+10. `leave_work` - Immediately leave work - ultimate stress relief
+11. `company_dinner` - Company dinner (회식) with random events
 
 ### State Management System
 
@@ -231,7 +237,7 @@ main.py
 
 ### Key Functions
 
-- **`ChillState.update_stress()`**: Auto-increments stress based on time elapsed
+- **`ChillState._update_stress()`**: Private method that auto-increments stress (called with lock held)
 - **`ChillState.take_break()`**: Main break processing logic
 - **`format_response()`**: Formats tool responses to MCP specification
 - **Background thread**: Auto-decreases Boss Alert Level on cooldown schedule

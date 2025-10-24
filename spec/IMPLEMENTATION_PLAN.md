@@ -113,7 +113,7 @@ boss_alert_pattern = r"Boss Alert Level:\s*([0-5])"
    - Track last_boss_cooldown_time for alert auto-decrease
 
 2. **Implement state update logic**
-   - Method: `update_stress()` - auto-increment based on time elapsed
+   - Method: `_update_stress()` - private method, auto-increment based on time elapsed (called with lock held)
    - Method: `reduce_stress(amount)` - decrease stress by amount
    - Method: `check_boss_alert()` - randomly increase based on boss_alertness %
    - Method: `cooldown_boss_alert()` - decrease by 1 if cooldown period passed

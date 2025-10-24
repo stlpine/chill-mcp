@@ -19,7 +19,7 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (249 lines)
+main.py (400 lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
@@ -29,7 +29,8 @@ main.py (249 lines)
 │   ├── Config: boss_alertness, boss_alertness_cooldown
 │   ├── Timing: last_break_time, last_boss_cooldown_time
 │   ├── Concurrency: threading.Lock
-│   └── Background: daemon thread for auto-cooldown
+│   ├── Background: daemon thread for auto-cooldown
+│   └── _update_stress() - Private method (called with lock held)
 │
 ├── format_response() (Pure formatter - no side effects)
 │   └── Returns formatted string (takes stress/boss as params)
@@ -39,10 +40,11 @@ main.py (249 lines)
 │   ├── Applies 20s delay if boss_alert_level == 5
 │   └── Calls format_response() with state values
 │
-└── 8 MCP Tools (@mcp.tool decorators)
+└── 11 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
-    └── Advanced: bathroom_break, coffee_mission, urgent_call,
-                  deep_thinking, email_organizing
+    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
+    │             deep_thinking, email_organizing
+    └── Optional: chimaek, leave_work, company_dinner
 ```
 
 ## File Structure
@@ -138,13 +140,14 @@ python -m py_compile main.py
    Boss Alert Level: {0-5}
    ```
 
-   - Implementation: format_response() at lines 98-106 in main.py
+   - Implementation: format_response() at lines 100-103, take_break_and_format() at lines 106-114 in main.py
    - Must match regex patterns in spec/PRE_MISSION.md:257-203
 
 3. **Thread Safety** (REQUIRED - concurrent access)
    - All state access must use `with self.lock:` context manager
    - Background thread runs continuously
-   - Implementation: ChillState class lines 26-92 in main.py
+   - Private methods like \_update_stress() are called with lock already held
+   - Implementation: ChillState class lines 26-93 in main.py
 
 ### State Management Logic
 
@@ -152,20 +155,20 @@ python -m py_compile main.py
 
 - Auto-increments: 1+ points per minute (elapsed time / 60)
 - Decreases on break: random(1, 100)
-- Implementation: lines 57-66, 74-79 in main.py
+- Implementation: lines 57-68 (\_update_stress), 79-81 (reduction in take_break)
 
 **Boss Alert Level (0-5):**
 
 - Increases on break: random(0, 100) < boss_alertness probability
 - Auto-decreases: every boss_alertness_cooldown seconds via background thread
 - At level 5: triggers 20-second delay
-- Implementation: lines 41-55, 82-90 in main.py
+- Implementation: lines 41-55 (cooldown thread), 83-85 (increase in take_break)
 
 **20-Second Delay:**
 
-- Blocking: `time.sleep(20)` at line 104 in main.py
+- Blocking: `time.sleep(20)` at line 112 in main.py
 - Triggered when: boss_alert_level == 5
-- Applied: In format_response() before returning
+- Applied: In take_break_and_format() before returning
 
 ### Background Thread
 
@@ -220,6 +223,7 @@ def new_tool() -> str:
 ```
 
 **Documentation to update:**
+
 - README.md: Add to features list
 - CLAUDE.md: Update tool count in Quick Architecture Overview
 - PROJECT_OVERVIEW.md: Add to Features Checklist
@@ -238,17 +242,17 @@ def new_tool() -> str:
 **Example - Changing stress increment:**
 
 ```python
-def update_stress(self):
-    with self.lock:  # REQUIRED
-        now = datetime.now()
-        elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
+def _update_stress(self):
+    # PRIVATE: Called by take_break() with lock already held
+    now = datetime.now()
+    elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
 
-        # Modify this logic
-        stress_increase = int(elapsed_minutes * 2)  # Changed multiplier
+    # Modify this logic
+    stress_increase = int(elapsed_minutes * 2)  # Changed multiplier
 
-        # Keep bounds checking
-        if stress_increase > 0:
-            self.stress_level = min(100, self.stress_level + stress_increase)
+    # Keep bounds checking
+    if stress_increase > 0:
+        self.stress_level = min(100, self.stress_level + stress_increase)
 ```
 
 ### Debugging State Issues
@@ -325,6 +329,7 @@ python tests/test_chillmcp.py
 ### When to Update Documentation
 
 **Always update documentation when:**
+
 1. Adding/removing/modifying tools
 2. Changing state management logic
 3. Modifying response format
@@ -335,17 +340,17 @@ python tests/test_chillmcp.py
 
 ### Which Documents to Update
 
-| Change Type | Documents to Check/Update |
-|-------------|---------------------------|
-| **Code changes** | CLAUDE.md (line numbers), docs/ARCHITECTURE.md |
-| **New tools** | README.md (features list), PROJECT_OVERVIEW.md (checklist) |
-| **State logic** | README.md (state management), docs/ARCHITECTURE.md |
-| **CLI parameters** | README.md, CLAUDE.md, docs/ARCHITECTURE.md |
-| **Response format** | README.md (examples), docs/ARCHITECTURE.md |
-| **File structure** | CLAUDE.md (file structure), PROJECT_OVERVIEW.md |
-| **Testing changes** | docs/TESTING.md, README.md (testing section) |
-| **Dependencies** | README.md, CLAUDE.md (dependencies section) |
-| **Line count changes** | CLAUDE.md, PROJECT_OVERVIEW.md |
+| Change Type            | Documents to Check/Update                                  |
+| ---------------------- | ---------------------------------------------------------- |
+| **Code changes**       | CLAUDE.md (line numbers), docs/ARCHITECTURE.md             |
+| **New tools**          | README.md (features list), PROJECT_OVERVIEW.md (checklist) |
+| **State logic**        | README.md (state management), docs/ARCHITECTURE.md         |
+| **CLI parameters**     | README.md, CLAUDE.md, docs/ARCHITECTURE.md                 |
+| **Response format**    | README.md (examples), docs/ARCHITECTURE.md                 |
+| **File structure**     | CLAUDE.md (file structure), PROJECT_OVERVIEW.md            |
+| **Testing changes**    | docs/TESTING.md, README.md (testing section)               |
+| **Dependencies**       | README.md, CLAUDE.md (dependencies section)                |
+| **Line count changes** | CLAUDE.md, PROJECT_OVERVIEW.md                             |
 
 ### Documentation Update Workflow
 
@@ -375,17 +380,20 @@ wc -l main.py
 ### Common Documentation Inconsistencies to Avoid
 
 1. **Line counts** - Update everywhere when main.py changes
+
    - CLAUDE.md: "main.py (X lines)" in Quick Architecture Overview
    - CLAUDE.md: "Main code: `main.py` (lines 1-X)" in Quick Reference
    - PROJECT_OVERVIEW.md: "Main MCP server (X lines)" in Project Structure
    - PROJECT_OVERVIEW.md: Line count in Key Files table
 
 2. **Tool lists** - Keep synchronized across files
+
    - README.md: Features section with all 8 tools
    - CLAUDE.md: Quick Architecture Overview tool list
    - PROJECT_OVERVIEW.md: Features Checklist
 
 3. **File descriptions** - Use consistent terminology
+
    - CLAUDE.md should be described as "Development guide for Claude Code"
    - Not "Claude Desktop integration guide" or other variants
 
@@ -559,6 +567,7 @@ if elapsed >= threshold:
 Before committing changes:
 
 **Code Validation:**
+
 - [ ] CLI parameters work: `python main.py --help`
 - [ ] Syntax valid: `python -m py_compile main.py`
 - [ ] Format tests pass: `python tests/validate_format.py`
@@ -568,6 +577,7 @@ Before committing changes:
 - [ ] State bounds enforced (0-100 stress, 0-5 boss)
 
 **Documentation Validation:**
+
 - [ ] Line counts updated in CLAUDE.md and PROJECT_OVERVIEW.md
 - [ ] Tool lists synchronized across README.md, CLAUDE.md, PROJECT_OVERVIEW.md
 - [ ] File descriptions consistent across all documentation
@@ -580,13 +590,16 @@ Before committing changes:
 
 ### File Locations
 
-- Main code: `main.py` (lines 1-249)
+- Main code: `main.py` (lines 1-400)
 - CLI parsing: `main.py` (lines 14-20)
-- State class: `main.py` (lines 26-92)
-- Response formatting: `main.py` (lines 98-112)
-  - format_response (pure): lines 98-101
-  - take_break_and_format (helper): lines 104-112
-- Tools: `main.py` (lines 117-244)
+- State class: `main.py` (lines 26-93)
+- Response formatting: `main.py` (lines 100-114)
+  - format_response (pure): lines 100-103
+  - take_break_and_format (helper): lines 106-114
+- Tools: `main.py` (lines 117-395)
+  - Basic tools: lines 117-185
+  - Advanced tools: lines 187-302
+  - Optional tools: lines 305-395
 
 ### Key Variables
 
@@ -599,7 +612,7 @@ Before committing changes:
 
 ### Key Methods
 
-- `ChillState.update_stress()` - Auto-increment stress
+- `ChillState._update_stress()` - Auto-increment stress (private, called with lock held)
 - `ChillState.take_break()` - Process break, return state
 - `format_response()` - Pure formatter (no side effects)
 - `take_break_and_format()` - State mutation + formatting helper

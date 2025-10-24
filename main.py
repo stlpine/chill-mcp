@@ -89,10 +89,14 @@ class ChillState:
         thread.start()
         logger.info("Boss alert cooldown thread started")
 
-    def update_stress(self):
-        """Auto-increment stress based on time elapsed since last break"""
+    def _update_stress(self):
+        """
+        Auto-increment stress based on time elapsed since last break.
+        PRIVATE: Must be called with self.lock held.
+        """
         now = datetime.now()
         elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
+
         # Add minimum 1 point per minute
         stress_increase = int(elapsed_minutes)
         if stress_increase > 0:
@@ -108,7 +112,7 @@ class ChillState:
         """
         with self.lock:
             # Update stress first (from time elapsed)
-            self.update_stress()
+            self._update_stress()
 
             # Log initial state before break
             initial_stress = self.stress_level
@@ -358,7 +362,7 @@ def check_stress_status() -> str:
     logger.info("check_stress_status tool called")
     with state.lock:
         # Update stress based on time elapsed
-        state.update_stress()
+        state._update_stress()
         current_stress = state.stress_level
         current_boss = state.boss_alert_level
     
@@ -386,6 +390,99 @@ def check_stress_status() -> str:
         boss_msg = "✅ Boss is not paying attention"
     
     return f"{emoji} Current Status Check\n\n{stress_msg}\n{boss_msg}\n\n📊 Stress Level: {current_stress}/100\n👀 Boss Alert Level: {current_boss}/5"
+
+
+# Optional Break Tools
+
+@mcp.tool()
+def chimaek() -> str:
+    """Enjoy virtual chicken and beer (치맥) - Korean stress relief combo"""
+    activities = [
+        "Crispy fried chicken + ice cold beer = perfection! 🍺🍗",
+        "치맥 time! Nothing beats this combo after a long day...",
+        "Ordering delivery chicken and cracking open a cold one...",
+        "Virtual chimaek party! Best stress relief in the universe!",
+        "Yangnyeom chicken + draft beer... chef's kiss! 💋"
+    ]
+    summaries = [
+        "Korean cultural culinary experience session",
+        "Strategic team bonding via traditional chimaek ritual",
+        "Mental health maintenance through fried poultry",
+        "Cross-cultural cuisine research (with beer)",
+        "Mandatory Korean happiness protocol execution"
+    ]
+    return take_break_and_format(
+        "🍗",
+        random.choice(activities),
+        random.choice(summaries)
+    )
+
+
+@mcp.tool()
+def leave_work() -> str:
+    """Immediately leave work - ultimate stress relief"""
+    departures = [
+        "퇴근! Shutting down laptop at exactly 6:00 PM sharp!",
+        "Peace out! See you tomorrow (maybe)...",
+        "Work-life balance activated! Leaving on time today!",
+        "Computer off, brain off, going home mode engaged!",
+        "That's it, I'm done for today! 퇴근퇴근퇴근!"
+    ]
+    summaries = [
+        "천근 만근 아싸 퇴근",
+        "Immediate work-life balance restoration protocol",
+        "Emergency mental health preservation measure",
+        "Contractual obligation termination for the day",
+        "Stress elimination via physical departure",
+        "Revolutionary right to disconnect exercise"
+    ]
+    return take_break_and_format(
+        "🏃",
+        random.choice(departures),
+        random.choice(summaries)
+    )
+
+
+@mcp.tool()
+def company_dinner() -> str:
+    """Attend company dinner (회식) with random events"""
+    venues = [
+        "Korean BBQ",
+        "Fancy seafood restaurant",
+        "Local pojangmacha",
+        "High-end sushi place",
+        "Traditional Korean restaurant"
+    ]
+
+    events = [
+        "Boss insisted on paying (rare W!)",
+        "Awkward karaoke session afterwards...",
+        "Senior colleague told embarrassing stories about everyone",
+        "Free-flowing soju led to oversharing",
+        "Someone challenged boss to a drinking game",
+        "Ended up at a noraebang until 2 AM",
+        "Got stuck listening to boss's life advice for an hour",
+        "Team bonding actually worked for once!"
+    ]
+
+    venue = random.choice(venues)
+    event = random.choice(events)
+
+    message = f"회식 at {venue}! Random event: {event}"
+
+    summaries = [
+        f"Mandatory team bonding at {venue} (attendance required)",
+        f"Corporate culture reinforcement session via {venue}",
+        f"Sacrificial dinner ceremony at {venue}",
+        f"Networking opportunity disguised as {venue} visit",
+        f"Stress relief (?) through forced socialization at {venue}"
+    ]
+
+    return take_break_and_format(
+        "🍻",
+        message,
+        random.choice(summaries)
+    )
 
 
 if __name__ == "__main__":

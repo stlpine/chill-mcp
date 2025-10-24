@@ -13,7 +13,8 @@ import os
 
 # Get the project root directory (parent of tests/)
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PYTHON_PATH = os.path.join(PROJECT_ROOT, "venv", "bin", "python")
+# Use the current Python interpreter (works in both local venv and CI)
+PYTHON_PATH = sys.executable
 MAIN_PATH = os.path.join(PROJECT_ROOT, "main.py")
 
 

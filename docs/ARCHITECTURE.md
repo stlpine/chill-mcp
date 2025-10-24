@@ -41,7 +41,7 @@ ChillMCP is an MCP (Model Context Protocol) server that simulates AI agent stres
 │  │  └──────────────────────────────────────────────┘ │ │
 │  │  ┌──────────────────────────────────────────────┐ │ │
 │  │  │  Methods:                                    │ │ │
-│  │  │  - update_stress()                           │ │ │
+│  │  │  - _update_stress() (private)                │ │ │
 │  │  │  - take_break()                              │ │ │
 │  │  │  - _start_cooldown_thread()                  │ │ │
 │  │  └──────────────────────────────────────────────┘ │ │
@@ -86,25 +86,27 @@ args = parser.parse_args()
 
 **Critical Methods:**
 
-#### `update_stress()`
+#### `_update_stress()` (Private Method)
 ```python
-def update_stress(self):
-    with self.lock:
-        now = datetime.now()
-        elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
-        stress_increase = int(elapsed_minutes)
-        if stress_increase > 0:
-            self.stress_level = min(100, self.stress_level + stress_increase)
+def _update_stress(self):
+    """PRIVATE: Must be called with self.lock held"""
+    now = datetime.now()
+    elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
+    stress_increase = int(elapsed_minutes)
+    if stress_increase > 0:
+        self.stress_level = min(100, self.stress_level + stress_increase)
 ```
+- **Private method** - only called by `take_break()` with lock already held
 - Calculates time since last break
 - Adds 1+ stress points per minute
 - Caps at 100
+- **No lock acquisition** - prevents deadlock since caller holds lock
 
 #### `take_break()`
 ```python
 def take_break(self) -> tuple[int, int, str]:
     with self.lock:
-        self.update_stress()
+        self._update_stress()  # Private method, lock already held
         stress_reduction = random.randint(1, 100)
         self.stress_level = max(0, self.stress_level - stress_reduction)
 
@@ -220,11 +222,33 @@ class ChillState:
 - Reading/writing time tracking variables
 - All state calculations
 
+### Deadlock Prevention
+
+**Problem:** Python's `threading.Lock()` is non-reentrant - a thread cannot acquire the same lock twice.
+
+**Solution:** Private methods called with lock already held
+```python
+def _update_stress(self):
+    # NO lock acquisition - called by take_break() which already holds lock
+    now = datetime.now()
+    # ... state updates ...
+
+def take_break(self):
+    with self.lock:  # Acquire lock once
+        self._update_stress()  # Safe - lock already held
+        # ... other state updates ...
+```
+
+**Key Points:**
+- Private methods (prefix `_`) indicate they require lock held by caller
+- No nested lock acquisition prevents deadlock
+- All state access still protected by single lock
+
 ### Performance Considerations
 
 - **Lock contention:** Minimal because tool calls are typically sequential
 - **Lock duration:** Very short (milliseconds) for all operations
-- **No deadlocks:** Single lock, no nested locking
+- **No deadlocks:** Single lock, no nested locking, private methods for lock-held calls
 
 ## Data Flow
 
@@ -239,7 +263,7 @@ class ChillState:
                  ↓
 4. Lock acquired
                  ↓
-5. update_stress() - Calculate time-based stress increase
+5. _update_stress() - Calculate time-based stress increase (private method)
                  ↓
 6. Reduce stress by random amount
                  ↓
@@ -413,7 +437,7 @@ Potential enhancements (outside specification):
 | 8 break tools | @mcp.tool decorators | Tool list in code |
 | Stress 0-100 | Clamping with min/max | State tests |
 | Boss Alert 0-5 | Clamping with min/max | State tests |
-| Stress auto-increment | update_stress() | Time-based tests |
+| Stress auto-increment | _update_stress() | Time-based tests |
 | Boss Alert probability | random + boss_alertness | Probability tests |
 | Boss Alert cooldown | Background thread | Cooldown tests |
 | 20s delay at level 5 | time.sleep(20) | Integration tests |

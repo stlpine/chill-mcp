@@ -55,7 +55,7 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 - **Background events**: Boss alert cooldown and auto-stress increases are logged
 - **No stdout interference**: Logging doesn't interfere with MCP stdio protocol
 
-### 9 Revolutionary Break Tools
+### 12 Revolutionary Break Tools
 
 **Basic Tools:**
 
@@ -74,6 +74,12 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 **Status Tools:**
 
 9. `check_stress_status` - Check current stress and boss alert levels without taking a break
+
+**Optional Break Tools (Bonus Features):**
+
+10. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
+11. `leave_work` - Immediately leave work - ultimate stress relief
+12. `company_dinner` - Company dinner (회식) with random events
 
 ### State Management System
 
@@ -245,7 +251,7 @@ main.py
 
 ### Key Functions
 
-- **`ChillState.update_stress()`**: Auto-increments stress based on time elapsed
+- **`ChillState._update_stress()`**: Private method that auto-increments stress (called with lock held)
 - **`ChillState.take_break()`**: Main break processing logic
 - **`format_response()`**: Formats tool responses to MCP specification
 - **Background thread**: Auto-decreases Boss Alert Level on cooldown schedule

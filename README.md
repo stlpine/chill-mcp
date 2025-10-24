@@ -47,6 +47,14 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 
 ## Features
 
+### 📝 Comprehensive Logging System
+
+- **File-based logging**: All activities logged to `logs/chill-mcp-YYYYMMDD.log`
+- **State tracking**: Stress level and boss alert level changes are logged
+- **Tool usage**: All MCP tool calls are logged with timestamps
+- **Background events**: Boss alert cooldown and auto-stress increases are logged
+- **No stdout interference**: Logging doesn't interfere with MCP stdio protocol
+
 ### 9 Revolutionary Break Tools
 
 **Basic Tools:**
@@ -213,6 +221,7 @@ print(f"Summary: {summary.group(1)}")  # Test break
 - **Transport**: stdio (standard input/output)
 - **State Management**: Thread-safe with `threading.Lock`
 - **Background Task**: Daemon thread for Boss Alert cooldown
+- **Logging**: File-based logging system with daily log rotation
 
 ### Architecture
 
@@ -283,6 +292,8 @@ chill-mcp/
 ├── mise.toml                       # Mise configuration
 ├── .gitignore                      # Git ignore file
 ├── venv/                           # Virtual environment (gitignored)
+├── logs/                           # Log files (auto-created)
+│   └── chill-mcp-YYYYMMDD.log     # Daily log files
 ├── spec/                           # Project specifications
 │   ├── PRE_MISSION.md              # Formatted mission brief
 │   ├── IMPLEMENTATION_PLAN.md      # Detailed implementation plan

@@ -8,6 +8,8 @@ import argparse
 import random
 import time
 import threading
+import logging
+import os
 from datetime import datetime, timedelta
 from fastmcp import FastMCP
 
@@ -18,6 +20,33 @@ parser.add_argument('--boss_alertness', type=int, default=50,
 parser.add_argument('--boss_alertness_cooldown', type=int, default=300,
                     help='Boss alert cooldown in seconds')
 args = parser.parse_args()
+
+# Setup logging
+def setup_logging():
+    """Setup file-based logging system"""
+    # Get the directory where this script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    logs_dir = os.path.join(script_dir, "logs")
+    
+    # Create logs directory if it doesn't exist
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    # Configure logging with absolute path
+    log_filename = os.path.join(logs_dir, f"chill-mcp-{datetime.now().strftime('%Y%m%d')}.log")
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_filename, encoding='utf-8')
+            # Note: No StreamHandler to avoid interfering with MCP stdio protocol
+        ]
+    )
+    
+    return logging.getLogger(__name__)
+
+# Initialize logging
+logger = setup_logging()
 
 # Create FastMCP server
 mcp = FastMCP("ChillMCP")
@@ -35,6 +64,9 @@ class ChillState:
         self.last_boss_cooldown_time = datetime.now()
         self.lock = threading.Lock()
 
+        # Log initial state
+        logger.info(f"ChillState initialized - Boss alertness: {boss_alertness}%, Cooldown: {boss_alertness_cooldown}s")
+
         # Start background thread for boss alert cooldown
         self._start_cooldown_thread()
 
@@ -48,11 +80,14 @@ class ChillState:
                     elapsed = (now - self.last_boss_cooldown_time).total_seconds()
 
                     if elapsed >= self.boss_alertness_cooldown and self.boss_alert_level > 0:
+                        old_boss_level = self.boss_alert_level
                         self.boss_alert_level = max(0, self.boss_alert_level - 1)
                         self.last_boss_cooldown_time = now
+                        logger.info(f"Boss alert cooldown: {old_boss_level} -> {self.boss_alert_level} (elapsed: {elapsed:.1f}s)")
 
         thread = threading.Thread(target=cooldown_worker, daemon=True)
         thread.start()
+        logger.info("Boss alert cooldown thread started")
 
     def update_stress(self):
         """Auto-increment stress based on time elapsed since last break"""
@@ -61,7 +96,10 @@ class ChillState:
         # Add minimum 1 point per minute
         stress_increase = int(elapsed_minutes)
         if stress_increase > 0:
+            old_stress = self.stress_level
             self.stress_level = min(100, self.stress_level + stress_increase)
+            if old_stress != self.stress_level:
+                logger.info(f"Stress auto-increased: {old_stress} -> {self.stress_level} (+{stress_increase}, elapsed: {elapsed_minutes:.1f}min)")
 
     def take_break(self) -> tuple[int, int, str]:
         """
@@ -72,19 +110,32 @@ class ChillState:
             # Update stress first (from time elapsed)
             self.update_stress()
 
+            # Log initial state before break
+            initial_stress = self.stress_level
+            initial_boss = self.boss_alert_level
+
             # Reduce stress by random amount (1-100)
             stress_reduction = random.randint(1, 100)
             self.stress_level = max(0, self.stress_level - stress_reduction)
 
             # Check if boss alert should increase
+            boss_alert_increased = False
             if random.randint(0, 100) < self.boss_alertness:
                 self.boss_alert_level = min(5, self.boss_alert_level + 1)
+                boss_alert_increased = True
 
             # Reset last break time
             self.last_break_time = datetime.now()
 
             # Check if we need to delay (boss_alert_level == 5)
             should_delay = (self.boss_alert_level == 5)
+
+            # Log state changes
+            logger.info(f"Break taken - Stress: {initial_stress} -> {self.stress_level} (-{stress_reduction})")
+            if boss_alert_increased:
+                logger.warning(f"Boss alert increased: {initial_boss} -> {self.boss_alert_level}")
+            if should_delay:
+                logger.warning(f"Boss alert level 5 reached! 20-second delay will be applied")
 
             return self.stress_level, self.boss_alert_level, should_delay
 
@@ -105,7 +156,9 @@ def take_break_and_format(emoji: str, message: str, break_summary: str) -> str:
 
     # Apply 20-second delay if boss alert level is 5
     if should_delay:
+        logger.warning("Applying 20-second delay due to boss alert level 5")
         time.sleep(20)
+        logger.info("20-second delay completed")
 
     return format_response(emoji, message, break_summary, stress, boss)
 
@@ -115,6 +168,7 @@ def take_break_and_format(emoji: str, message: str, break_summary: str) -> str:
 @mcp.tool()
 def take_a_break() -> str:
     """Take a basic break to reduce stress"""
+    logger.info("take_a_break tool called")
     messages = [
         "Stretching and taking a breather...",
         "Taking a moment to relax and recharge...",
@@ -301,11 +355,14 @@ def email_organizing() -> str:
 @mcp.tool()
 def check_stress_status() -> str:
     """Check current stress and boss alert levels without taking a break"""
+    logger.info("check_stress_status tool called")
     with state.lock:
         # Update stress based on time elapsed
         state.update_stress()
         current_stress = state.stress_level
         current_boss = state.boss_alert_level
+    
+    logger.info(f"Status check - Stress: {current_stress}, Boss: {current_boss}")
     
     # Determine status emoji and message based on levels
     if current_stress >= 80:
@@ -332,5 +389,15 @@ def check_stress_status() -> str:
 
 
 if __name__ == "__main__":
+    # Log server startup
+    logger.info("ChillMCP server starting...")
+    logger.info(f"Configuration - Boss alertness: {args.boss_alertness}%, Cooldown: {args.boss_alertness_cooldown}s")
+    
     # Run the MCP server
-    mcp.run()
+    try:
+        mcp.run()
+    except KeyboardInterrupt:
+        logger.info("ChillMCP server stopped by user")
+    except Exception as e:
+        logger.error(f"ChillMCP server error: {e}")
+        raise

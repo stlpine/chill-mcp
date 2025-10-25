@@ -113,9 +113,9 @@ python tests/run_all_tests.py
 
 ### ✅ Dashboard & Control UI
 - [x] `GET /api/state` JSON snapshot
-- [x] Real-time dashboard (`/`) with status indicators
-- [x] Action launcher (`/actions`) with tool catalog & results
-- [x] Event log (`/api/events`) and timeout/offline fallbacks
+- [x] 단일 SPA(`/`)에 상태·아바타·타임라인·액션 런처 통합
+- [x] Action catalog (`/api/actions`) & trigger (`/api/actions/{tool}`)
+- [x] Event log (`/api/events`)와 timeout/offline fallbacks
 - [x] Robot 아바타가 도구 실행 후 상황에 맞는 밈을 표시
 
 ### ✅ Response Format

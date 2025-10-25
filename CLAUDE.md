@@ -65,12 +65,11 @@ webapp/ (FastAPI dashboard)
 
 **Web endpoints overview:**
 - `GET /` – 실시간 상태 대시보드
-- `GET /actions` – 브라우저에서 MCP 도구를 실행하는 콘솔
 - `GET /api/state` – `get_state_snapshot` 기반 JSON 스냅샷
 - `GET /api/actions` – 노출할 도구 목록
 - `POST /api/actions/{tool}` – MCP 도구 실행 (20초 지연 포함 가능)
 - `GET /api/events` – 최근 실행 이벤트 로그
-- `/actions` 화면의 로봇 아바타는 도구 실행 결과에 맞는 밈을 `webapp/memes.py` 로직으로 표시
+- `/` SPA 상의 로봇 아바타가 도구 실행 결과에 맞는 밈을 `webapp/memes.py` 로직으로 표시
 
 ## File Structure
 

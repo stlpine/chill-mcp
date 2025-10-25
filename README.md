@@ -45,8 +45,9 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 uvicorn webapp.app:app --reload
 ```
 
-The dashboard starts on [http://localhost:8000](http://localhost:8000) and shows real-time stress / boss alert metrics.  
-Open [http://localhost:8000/actions](http://localhost:8000/actions) to launch break tools from the browser.
+The single-page control center lives on [http://localhost:8000](http://localhost:8000).  
+좌측 60%는 로봇 아바타 화면(상황별 밈)과 휴식 메시지, 우측은 실시간 상태 패널이 표시됩니다.  
+하단 영역에서 모든 휴식 도구를 실행하고 결과를 바로 확인할 수 있습니다.
 
 Use environment variables to customise how the backend talks to the MCP server:
 
@@ -122,9 +123,8 @@ Use environment variables to customise how the backend talks to the MCP server:
   - `GET /api/actions` – Action catalog used by the UI
   - `POST /api/actions/{tool}` – Trigger MCP tools and receive structured results
   - `GET /api/events` – Recent break history for dashboards
-  - `GET /` – Real-time dashboard displaying gauges and recent events
-  - `GET /actions` – Action launcher page with quick access buttons
-- **Robot avatar UI:** The actions console renders a meme on the robot’s face after each tool call, reflecting stress/boss levels and special break types.
+  - `GET /` – SPA that combines avatar, status board, action launcher, and timeline
+- **Robot avatar UI:** 페이지 좌측의 로봇 아바타가 각 도구 실행 이후 상황에 맞는 밈을 표시합니다.
 - **Timeout awareness:** If the MCP server stops responding, the dashboard highlights a warning and shows the latest cached snapshot.
 - **Configurable command:** Override the MCP launch command with `CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, or `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN` for development flexibility.
 

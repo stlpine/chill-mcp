@@ -177,8 +177,7 @@ def run_html_routes_render() -> bool:
     try:
         with _make_client(fake) as client:
             root_ok = client.get("/").status_code == 200
-            actions_ok = client.get("/actions").status_code == 200
-        return root_ok and actions_ok
+        return root_ok
     except Exception as exc:
         print(f"  ✗ html route error: {exc}")
         return False

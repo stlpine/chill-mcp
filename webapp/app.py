@@ -21,6 +21,7 @@ LOGGER = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).parent / "static"
 TEMPLATE_DIR = Path(__file__).parent / "templates"
+INDEX_TEMPLATE = "index.html"
 
 ACTION_TOOLS: List[Dict[str, str]] = [
     {"name": "take_a_break", "label": "Take a Break", "emoji": "😌", "description": "기본 휴식으로 스트레스를 낮춥니다."},
@@ -98,11 +99,7 @@ def create_app(client: Optional[MCPClient] = None) -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     async def dashboard_page() -> str:
-        return _load_template("dashboard.html")
-
-    @app.get("/actions", response_class=HTMLResponse)
-    async def actions_page() -> str:
-        return _load_template("actions.html")
+        return _load_template(INDEX_TEMPLATE)
 
     @app.get("/api/state", response_class=JSONResponse)
     async def api_state() -> Dict[str, Any]:

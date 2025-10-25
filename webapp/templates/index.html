@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>ChillMCP Control Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>AI Agent Chill Station</h1>
+        <p class="subtitle">스트레스 지표와 휴식 도구를 한 화면에서 제어하세요.</p>
+      </div>
+      <div class="status-indicator" data-status="offline">
+        <span aria-hidden="true"></span>
+        <strong>대기 중...</strong>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="stage" aria-live="polite">
+        <div class="avatar-shell">
+          <div class="avatar-screen">
+            <img data-ui="meme-image" alt="" hidden />
+            <div class="avatar-screen-placeholder" data-ui="meme-placeholder">쉬는 중...</div>
+          </div>
+          <div class="avatar-eyes"></div>
+          <div class="avatar-body"></div>
+        </div>
+        <div class="avatar-caption">
+          <p class="caption-headline" data-ui="headline">잠시 여유를 즐겨요!</p>
+          <p class="caption-subline" data-ui="subline">도구를 실행하면 로봇 화면에 상황에 맞는 밈이 표시됩니다.</p>
+        </div>
+      </section>
+
+      <section class="status-board">
+        <article class="card metrics-card">
+          <h2>현재 상태</h2>
+          <div class="metric">
+            <div class="metric-info">
+              <span>Stress Level</span>
+              <strong data-ui="stress-value">-</strong>
+            </div>
+            <div class="progress">
+              <span data-ui="stress-bar"></span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="metric-info">
+              <span>Boss Alert</span>
+              <strong data-ui="boss-value">-</strong>
+            </div>
+            <div class="progress warning">
+              <span data-ui="boss-bar"></span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="metric-info">
+              <span>다음 쿨다운까지</span>
+              <strong data-ui="cooldown">-</strong>
+            </div>
+          </div>
+          <div class="metric meta">
+            <div>
+              <span>마지막 휴식</span>
+              <strong data-ui="last-break">-</strong>
+            </div>
+            <div>
+              <span>마지막 Boss 감소</span>
+              <strong data-ui="last-cooldown">-</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="card timeline-card">
+          <div class="card-header">
+            <h2>최근 이벤트</h2>
+            <button type="button" data-ui="refresh-events" aria-label="이벤트 새로고침">↻</button>
+          </div>
+          <ul class="timeline" data-ui="timeline"></ul>
+        </article>
+      </section>
+    </main>
+
+    <section class="bottom-panel">
+      <article class="card actions-card">
+        <div class="card-header">
+          <h2>휴식 도구</h2>
+          <p>클릭하면 즉시 실행됩니다. Boss Alert Level 5에서는 20초 딜레이가 적용될 수 있어요.</p>
+        </div>
+        <div class="actions-grid" data-ui="actions"></div>
+      </article>
+
+      <article class="card result-card" aria-live="polite">
+        <h2>최근 실행 결과</h2>
+        <div class="result-status" data-ui="result-status">아직 실행된 도구가 없습니다.</div>
+        <div class="result-body" data-ui="result-body" hidden>
+          <div class="result-headline">
+            <span class="result-emoji" data-ui="result-emoji">🙂</span>
+            <div>
+              <p class="result-message" data-ui="result-message"></p>
+              <p class="result-summary" data-ui="result-summary"></p>
+            </div>
+          </div>
+          <dl class="result-metrics">
+            <div>
+              <dt>Stress Level</dt>
+              <dd data-ui="result-stress">-</dd>
+            </div>
+            <div>
+              <dt>Boss Alert</dt>
+              <dd data-ui="result-boss">-</dd>
+            </div>
+            <div>
+              <dt>쿨다운</dt>
+              <dd data-ui="result-cooldown">-</dd>
+            </div>
+          </dl>
+        </div>
+      </article>
+    </section>
+
+    <div class="error-banner" role="status" data-ui="error" hidden></div>
+
+    <script src="/static/app.js" type="module"></script>
+  </body>
+</html>

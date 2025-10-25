@@ -244,10 +244,10 @@ uvicorn webapp.app:app --reload
 ### Scenario 7: Actions API & UI
 Test the browser-based action launcher and API endpoints.
 
-1. Open `http://localhost:8000/actions`.
-2. Trigger one of the tools (e.g., "Take a Break").
-3. Confirm the result panel updates with the emoji/message, the robot 아바타 화면에 맞춤 밈이 표시되고, 스트레스/보스 수치가 바뀝니다.
-4. Check that `/api/events` now lists the action and the dashboard timeline reflects the update.
+1. Open `http://localhost:8000` (SPA).
+2. 좌측 아바타 섹션 아래의 도구 버튼 중 하나를 실행합니다 (예: "Take a Break").
+3. 우측 상태 패널이 최신 수치로 갱신되고, 아바타 화면에 맞춤 밈과 메시지가 표시되는지 확인합니다.
+4. `/api/events`가 새 이벤트를 포함하고 페이지 하단 타임라인이 변경 내용을 반영하는지 확인합니다.
 
 ## Testing with Claude Desktop
 

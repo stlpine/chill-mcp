@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>ChillMCP Actions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body class="actions-body">
+    <header>
+      <h1>AI Agent Break Actions</h1>
+      <nav>
+        <a href="/">대시보드</a>
+      </nav>
+    </header>
+
+    <main class="actions-layout">
+      <section class="card actions-panel">
+        <h2>휴식 도구 선택</h2>
+        <div class="actions-grid" data-actions="list"></div>
+      </section>
+
+      <section class="card result-panel" data-result="panel">
+        <h2>최근 실행 결과</h2>
+        <div class="result-status" data-result="status">아직 실행한 도구가 없습니다.</div>
+        <div class="result-body" data-result="body" hidden>
+          <div class="result-header">
+            <span class="result-emoji" data-result="emoji">🙂</span>
+            <div>
+              <div class="result-message" data-result="message"></div>
+              <div class="result-summary" data-result="summary"></div>
+            </div>
+          </div>
+          <dl class="result-metrics">
+            <div>
+              <dt>Stress Level</dt>
+              <dd data-result="stress">-</dd>
+            </div>
+            <div>
+              <dt>Boss Alert Level</dt>
+              <dd data-result="boss">-</dd>
+            </div>
+            <div>
+              <dt>Cooldown</dt>
+              <dd data-result="cooldown">-</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="error-banner" role="status" data-result="error" hidden></div>
+      </section>
+
+      <section class="card events-panel">
+        <h2>최근 이벤트</h2>
+        <ul class="events-list" data-events="list"></ul>
+      </section>
+    </main>
+
+    <script src="/static/actions.js" type="module"></script>
+  </body>
+</html>

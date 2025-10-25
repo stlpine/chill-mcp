@@ -62,6 +62,14 @@ webapp/ (FastAPI dashboard)
 └── static/, templates/ - Dashboard assets (styles, scripts, HTML)
 ```
 
+**Web endpoints overview:**
+- `GET /` – 실시간 상태 대시보드
+- `GET /actions` – 브라우저에서 MCP 도구를 실행하는 콘솔
+- `GET /api/state` – `get_state_snapshot` 기반 JSON 스냅샷
+- `GET /api/actions` – 노출할 도구 목록
+- `POST /api/actions/{tool}` – MCP 도구 실행 (20초 지연 포함 가능)
+- `GET /api/events` – 최근 실행 이벤트 로그
+
 ## File Structure
 
 ```

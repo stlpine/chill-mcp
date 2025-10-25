@@ -6,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const bossValue = document.querySelector('[data-metric="boss"][data-field="value"]');
   const bossBar = document.querySelector('[data-metric="boss"][data-field="bar"]');
   const cooldownValue = document.querySelector('[data-metric="cooldown"][data-field="value"]');
-  const lastBreakEl = document.querySelector('[data-event="last-break"]');
-  const lastCooldownEl = document.querySelector('[data-event="last-cooldown"]');
+  const eventsTimeline = document.querySelector('[data-events="timeline"]');
 
   async function fetchState() {
     try {
@@ -67,12 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cooldownSeconds = Math.round(snapshot.cooldown_seconds_remaining);
     cooldownValue.textContent = `${cooldownSeconds}s`;
 
-    if (lastBreakEl) {
-      lastBreakEl.querySelector("time").textContent = formatRelative(snapshot.last_break_time);
-    }
-    if (lastCooldownEl) {
-      lastCooldownEl.querySelector("time").textContent = formatRelative(snapshot.last_boss_cooldown_time);
-    }
+    refreshEvents();
   }
 
   function formatRelative(isoString) {
@@ -96,4 +90,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fetchState();
   setInterval(fetchState, 4000);
+
+  async function refreshEvents() {
+    if (!eventsTimeline) return;
+    try {
+      const response = await fetch('/api/events', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const { events } = await response.json();
+      renderTimeline(events ?? []);
+    } catch (error) {
+      console.warn('Failed to refresh events', error);
+    }
+  }
+
+  function renderTimeline(events) {
+    eventsTimeline.innerHTML = '';
+    if (!events || events.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'timeline-item';
+      empty.innerHTML = '<strong>이력이 없습니다</strong><time>-</time>';
+      eventsTimeline.appendChild(empty);
+      return;
+    }
+
+    events.slice(0, 4).forEach((event) => {
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+      const title = document.createElement('strong');
+      title.textContent = `${event.emoji ?? ''} ${event.label ?? event.tool}`.trim();
+      const message = document.createElement('div');
+      message.textContent = event.break_summary || event.message || '';
+      const time = document.createElement('time');
+      time.dateTime = event.timestamp;
+      time.textContent = formatRelative(event.timestamp);
+
+      item.appendChild(title);
+      if (message.textContent) {
+        item.appendChild(message);
+      }
+      item.appendChild(time);
+      eventsTimeline.appendChild(item);
+    });
+  }
+
+  refreshEvents();
+  setInterval(refreshEvents, 6000);
 });

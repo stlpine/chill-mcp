@@ -241,6 +241,14 @@ uvicorn webapp.app:app --reload
 2. Visit `http://localhost:8000` and check that stress/boss gauges populate within a few seconds.
 3. Stop the MCP process; the dashboard status indicator should switch to "degraded" or "offline" with a warning banner.
 
+### Scenario 7: Actions API & UI
+Test the browser-based action launcher and API endpoints.
+
+1. Open `http://localhost:8000/actions`.
+2. Trigger one of the tools (e.g., "Take a Break").
+3. Confirm the result panel updates with the emoji/message and the stress/boss values change.
+4. Check that `/api/events` now lists the action and the dashboard timeline reflects the update.
+
 ## Testing with Claude Desktop
 
 ### Setup

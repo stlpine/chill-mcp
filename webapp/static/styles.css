@@ -18,6 +18,12 @@ body {
   flex-direction: column;
 }
 
+body.actions-body nav a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
 main {
   flex: 1;
   padding: 2rem clamp(1rem, 5vw, 3rem);
@@ -149,4 +155,133 @@ h1 {
 
 .error-banner[data-visible="true"] {
   display: block;
+}
+
+.actions-layout {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.actions-panel {
+  grid-column: span 2;
+}
+
+.actions-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.action-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.85rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.action-card button {
+  border: none;
+  border-radius: 0.65rem;
+  padding: 0.6rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #0f172a;
+  transition: opacity 0.2s ease;
+}
+
+.action-card button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.result-panel {
+  position: relative;
+}
+
+.result-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.result-emoji {
+  font-size: 2.5rem;
+}
+
+.result-message {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.result-summary {
+  opacity: 0.7;
+  margin-top: 0.3rem;
+  max-width: 28ch;
+}
+
+.result-metrics {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.result-metrics dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.result-metrics dd {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.result-panel .error-banner[hidden] {
+  display: none;
+}
+
+.events-panel {
+  grid-column: span 3;
+}
+
+.events-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.events-list li {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.events-list li > span {
+  font-weight: 600;
+}
+
+.events-list time {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.event-metrics {
+  font-size: 0.85rem;
+  opacity: 0.75;
 }

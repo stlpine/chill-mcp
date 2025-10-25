@@ -46,6 +46,8 @@ uvicorn webapp.app:app --reload
 ```
 
 The dashboard starts on [http://localhost:8000](http://localhost:8000) and shows real-time stress / boss alert metrics.  
+Open [http://localhost:8000/actions](http://localhost:8000/actions) to launch break tools from the browser.
+
 Use environment variables to customise how the backend talks to the MCP server:
 
 - `CHILL_MCP_COMMAND`: Override the command used to spawn the MCP server (defaults to `python main.py ...`)
@@ -117,7 +119,11 @@ Use environment variables to customise how the backend talks to the MCP server:
 
 - **FastAPI backend (`webapp.app`)** polls the MCP server via JSON-RPC and exposes:
   - `GET /api/state` – Machine-readable stress/boss metrics with cooldown timers
+  - `GET /api/actions` – Action catalog used by the UI
+  - `POST /api/actions/{tool}` – Trigger MCP tools and receive structured results
+  - `GET /api/events` – Recent break history for dashboards
   - `GET /` – Real-time dashboard displaying gauges and recent events
+  - `GET /actions` – Action launcher page with quick access buttons
 - **Timeout awareness:** If the MCP server stops responding, the dashboard highlights a warning and shows the latest cached snapshot.
 - **Configurable command:** Override the MCP launch command with `CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, or `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN` for development flexibility.
 

@@ -111,6 +111,12 @@ python tests/run_all_tests.py
 - [x] Background cooldown daemon
 - [x] 20-second delay at Boss Alert Level 5
 
+### ✅ Dashboard & Control UI
+- [x] `GET /api/state` JSON snapshot
+- [x] Real-time dashboard (`/`) with status indicators
+- [x] Action launcher (`/actions`) with tool catalog & results
+- [x] Event log (`/api/events`) and timeout/offline fallbacks
+
 ### ✅ Response Format
 - [x] MCP specification compliant
 - [x] Regex parseable

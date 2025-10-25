@@ -19,7 +19,7 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (500+ lines)
+main.py (551 lines)
 ├── CLI Parsing (argparse)
 │   ├── --boss_alertness (0-100, REQUIRED)
 │   └── --boss_alertness_cooldown (seconds, REQUIRED)
@@ -32,7 +32,7 @@ main.py (500+ lines)
 ├── ChillState Class (Thread-safe state management)
 │   ├── State: stress_level (0-100), boss_alert_level (0-5)
 │   ├── Config: boss_alertness, boss_alertness_cooldown
-│   ├── Timing: last_break_time, last_boss_cooldown_time
+│   ├── Timing: last_break_time, last_boss_cooldown_time, delay_until
 │   ├── Concurrency: threading.Lock
 │   ├── Background: daemon thread for auto-cooldown
 │   ├── Logging: All state changes logged
@@ -46,19 +46,20 @@ main.py (500+ lines)
 │   ├── Applies 20s delay if boss_alert_level == 5
 │   └── Calls format_response() with state values
 │
-└── 12 MCP Tools (@mcp.tool decorators)
-    ├── Basic: take_a_break, watch_netflix, show_meme
-    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
-                  deep_thinking, email_organizing
-    ├── Status: check_stress_status
-    └── Optional: chimaek, leave_work, company_dinner
-=======
-└── 11 MCP Tools (@mcp.tool decorators)
+├── get_state_snapshot() (Integration helper)
+│   └── Returns JSON snapshot for dashboards & automations
+│
+└── 13 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
     ├── Advanced: bathroom_break, coffee_mission, urgent_call,
     │             deep_thinking, email_organizing
+    ├── Status & Integrations: check_stress_status, get_state_snapshot
     └── Optional: chimaek, leave_work, company_dinner
->>>>>>> origin/main
+
+webapp/ (FastAPI dashboard)
+├── app.py        - FastAPI factory, routes, static files
+├── mcp_client.py - JSON-RPC bridge spawning/communicating with MCP
+└── static/, templates/ - Dashboard assets (styles, scripts, HTML)
 ```
 
 ## File Structure
@@ -152,7 +153,7 @@ python -m py_compile main.py
 
    - `--boss_alertness`: Controls probability (0-100%) of boss alert increase
    - `--boss_alertness_cooldown`: Seconds between auto-decreases of boss alert
-   - Implementation: argparse parser at lines 14-20 in main.py
+   - Implementation: argparse parser at lines 18-22 in main.py
 
 2. **Response Format** (REQUIRED - must be regex-parseable)
 
@@ -164,14 +165,14 @@ python -m py_compile main.py
    Boss Alert Level: {0-5}
    ```
 
-   - Implementation: format_response() at lines 100-103, take_break_and_format() at lines 106-114 in main.py
+   - Implementation: format_response() at lines 164-167, take_break_and_format() at lines 170-182 in main.py
    - Must match regex patterns in spec/PRE_MISSION.md:257-203
 
 3. **Thread Safety** (REQUIRED - concurrent access)
    - All state access must use `with self.lock:` context manager
    - Background thread runs continuously
    - Private methods like \_update_stress() are called with lock already held
-   - Implementation: ChillState class lines 26-93 in main.py
+   - Implementation: ChillState class lines 62-157 in main.py
 
 ### State Management Logic
 
@@ -179,18 +180,18 @@ python -m py_compile main.py
 
 - Auto-increments: 1+ points per minute (elapsed time / 60)
 - Decreases on break: random(1, 100)
-- Implementation: lines 57-68 (\_update_stress), 79-81 (reduction in take_break)
+- Implementation: lines 100-115 (\_update_stress), 129-156 (reduction in take_break)
 
 **Boss Alert Level (0-5):**
 
 - Increases on break: random(0, 100) < boss_alertness probability
 - Auto-decreases: every boss_alertness_cooldown seconds via background thread
 - At level 5: triggers 20-second delay
-- Implementation: lines 41-55 (cooldown thread), 83-85 (increase in take_break)
+- Implementation: lines 81-98 (cooldown thread), 134-139 (increase in take_break)
 
 **20-Second Delay:**
 
-- Blocking: `time.sleep(20)` at line 112 in main.py
+- Blocking: `time.sleep(20)` at line 175 in main.py
 - Triggered when: boss_alert_level == 5
 - Applied: In take_break_and_format() before returning
 
@@ -198,7 +199,7 @@ python -m py_compile main.py
 
 **Purpose:** Auto-decrease boss alert level on cooldown schedule
 **Type:** Daemon thread (exits when main exits)
-**Implementation:** Lines 41-55 in main.py
+**Implementation:** Lines 81-98 in main.py
 
 ```python
 def _start_cooldown_thread(self):
@@ -459,6 +460,10 @@ grep -n "boss_alertness" README.md CLAUDE.md PROJECT_OVERVIEW.md docs/ARCHITECTU
   - Provides @mcp.tool() decorator
   - Handles stdio transport
   - Manages MCP request/response cycle
+- `fastapi` - Dashboard/API server framework
+  - Serves HTML/JS assets and JSON endpoints
+  - Integrates cleanly with asyncio event loop
+- `uvicorn` - ASGI server for running the FastAPI app
 
 **Why FastMCP:**
 
@@ -620,16 +625,18 @@ Before committing changes:
 
 ### File Locations
 
-- Main code: `main.py` (lines 1-400)
-- CLI parsing: `main.py` (lines 14-20)
-- State class: `main.py` (lines 26-93)
-- Response formatting: `main.py` (lines 100-114)
-  - format_response (pure): lines 100-103
-  - take_break_and_format (helper): lines 106-114
-- Tools: `main.py` (lines 117-395)
-  - Basic tools: lines 117-185
-  - Advanced tools: lines 187-302
-  - Optional tools: lines 305-395
+- Main code: `main.py` (lines 1-551)
+- CLI parsing: `main.py` (lines 18-22)
+- State class: `main.py` (lines 62-157)
+- Response formatting: `main.py` (lines 164-182)
+  - format_response (pure): lines 164-167
+  - take_break_and_format (helper): lines 170-182
+- Tools: `main.py` (lines 187-512)
+  - Basic tools: lines 187-258
+  - Advanced tools: lines 259-351
+  - Status & integrations: lines 351-417
+  - Optional tools: lines 419-512
+- Dashboard backend: `webapp/app.py`, `webapp/mcp_client.py`
 
 ### Key Variables
 

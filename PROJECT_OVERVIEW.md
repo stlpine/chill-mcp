@@ -6,18 +6,22 @@
 **Purpose:** SKT AI Summit Hackathon Pre-mission
 **Status:** ✅ Complete and Ready for Submission
 **Language:** Python 3.11+
-**Framework:** FastMCP
+**Framework:** FastMCP + FastAPI (dashboard)
 
 ## One-Minute Summary
 
-ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take breaks to manage stress. It implements a gamified system with 11 break tools (8 required + 3 optional), state management (stress and boss alert levels), and configurable parameters for testing different scenarios.
+ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take breaks to manage stress. It implements a gamified system with 13 tools (8 required break tools + status/integration helpers + 3 optional extras), state management (stress and boss alert levels), and configurable parameters for testing different scenarios. A FastAPI dashboard surfaces real-time metrics by talking to the MCP server over JSON-RPC.
 
 ## Project Structure
 
 ```
 chill-mcp/
-├── main.py                         # ⭐ Main MCP server (500+ lines)
-├── requirements.txt                # Dependencies (fastmcp)
+├── main.py                         # ⭐ Main MCP server (~551 lines)
+├── webapp/                         # FastAPI dashboard & MCP bridge
+│   ├── app.py                      # FastAPI entrypoint
+│   ├── mcp_client.py               # JSON-RPC client for MCP
+│   └── static/, templates/         # Dashboard assets
+├── requirements.txt                # Dependencies (fastmcp, fastapi, uvicorn)
 ├── LICENSE                         # MIT License
 ├── README.md                       # User documentation
 ├── PROJECT_OVERVIEW.md             # This file
@@ -61,10 +65,12 @@ python tests/run_all_tests.py
 
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
-| `main.py` | MCP server implementation | 500+ | ⭐⭐⭐ |
-| `README.md` | User guide & documentation | ~280 | ⭐⭐⭐ |
-| `CLAUDE.md` | Development guide for Claude Code | ~634 | ⭐⭐⭐ |
-| `requirements.txt` | Dependencies | 1 | ⭐⭐⭐ |
+| `main.py` | MCP server implementation | 551 | ⭐⭐⭐ |
+| `webapp/app.py` | FastAPI dashboard entrypoint | ~80 | ⭐⭐ |
+| `webapp/mcp_client.py` | MCP JSON-RPC bridge | ~190 | ⭐⭐ |
+| `README.md` | User guide & documentation | ~320 | ⭐⭐⭐ |
+| `CLAUDE.md` | Development guide for Claude Code | ~650 | ⭐⭐⭐ |
+| `requirements.txt` | Dependencies | 3 | ⭐⭐⭐ |
 | `spec/PRE_MISSION.md` | Hackathon requirements | ~330 | ⭐⭐ |
 | `docs/TESTING.md` | Testing guide | ~300 | ⭐⭐ |
 | `docs/ARCHITECTURE.md` | Architecture details | ~400 | ⭐ |
@@ -76,7 +82,7 @@ python tests/run_all_tests.py
 - [x] `--boss_alertness` parameter (0-100%)
 - [x] `--boss_alertness_cooldown` parameter (seconds)
 
-### ✅ Break Tools (12 total)
+### ✅ Tools & Integrations (13 total)
 **Basic (3):**
 - [x] `take_a_break` - Basic rest
 - [x] `watch_netflix` - Netflix relaxation
@@ -89,14 +95,14 @@ python tests/run_all_tests.py
 - [x] `deep_thinking` - Pretend thinking
 - [x] `email_organizing` - Email + shopping
 
-**Status (1):**
+**Status & Integrations (2):**
 - [x] `check_stress_status` - View current state without taking break
+- [x] `get_state_snapshot` - JSON snapshot for dashboards & automations
 
 **Optional (3):**
 - [x] `chimaek` - Virtual chicken & beer (Korean style)
 - [x] `leave_work` - Immediately leave work
 - [x] `company_dinner` - Company dinner with random events
->>>>>>> origin/main
 
 ### ✅ State Management
 - [x] Stress Level (0-100) with auto-increment

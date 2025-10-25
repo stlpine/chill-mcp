@@ -38,6 +38,20 @@ python main.py --boss_alertness 80 --boss_alertness_cooldown 60
 python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 ```
 
+### 3. Run the Web Dashboard (Experimental)
+
+```bash
+# Ensure the MCP server is running, then start the dashboard
+uvicorn webapp.app:app --reload
+```
+
+The dashboard starts on [http://localhost:8000](http://localhost:8000) and shows real-time stress / boss alert metrics.  
+Use environment variables to customise how the backend talks to the MCP server:
+
+- `CHILL_MCP_COMMAND`: Override the command used to spawn the MCP server (defaults to `python main.py ...`)
+- `CHILL_MCP_BOSS_ALERTNESS`: Override `--boss_alertness` when spawning the server
+- `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN`: Override `--boss_alertness_cooldown`
+
 ## Command-Line Parameters
 
 | Parameter                   | Type          | Default | Description                                                         |
@@ -55,7 +69,7 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 - **Background events**: Boss alert cooldown and auto-stress increases are logged
 - **No stdout interference**: Logging doesn't interfere with MCP stdio protocol
 
-### 12 Revolutionary Break Tools
+### 13 Revolutionary Tools & Integrations
 
 **Basic Tools:**
 
@@ -71,15 +85,16 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 7. `deep_thinking` - Pretend to think deeply while spacing out
 8. `email_organizing` - Email organization while online shopping
 
-**Status Tools:**
+**Status & Integration Tools:**
 
 9. `check_stress_status` - Check current stress and boss alert levels without taking a break
+10. `get_state_snapshot` - Machine-readable JSON snapshot for dashboards & automations
 
 **Optional Break Tools (Bonus Features):**
 
-10. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
-11. `leave_work` - Immediately leave work - ultimate stress relief
-12. `company_dinner` - Company dinner (회식) with random events
+11. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
+12. `leave_work` - Immediately leave work - ultimate stress relief
+13. `company_dinner` - Company dinner (회식) with random events
 
 ### State Management System
 
@@ -97,6 +112,14 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 - Auto-decreases by 1 every `--boss_alertness_cooldown` seconds
 - When level reaches 5, all break tools have 20-second delay
 - Otherwise, immediate response (<1 second)
+
+### 🌐 Dashboard & API
+
+- **FastAPI backend (`webapp.app`)** polls the MCP server via JSON-RPC and exposes:
+  - `GET /api/state` – Machine-readable stress/boss metrics with cooldown timers
+  - `GET /` – Real-time dashboard displaying gauges and recent events
+- **Timeout awareness:** If the MCP server stops responding, the dashboard highlights a warning and shows the latest cached snapshot.
+- **Configurable command:** Override the MCP launch command with `CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, or `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN` for development flexibility.
 
 ## Response Format
 

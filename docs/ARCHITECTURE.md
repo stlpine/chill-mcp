@@ -37,6 +37,7 @@ ChillMCP is an MCP (Model Context Protocol) server that simulates AI agent stres
 │  │  │  - boss_alertness_cooldown (seconds)         │ │ │
 │  │  │  - last_break_time (datetime)                │ │ │
 │  │  │  - last_boss_cooldown_time (datetime)        │ │ │
+│  │  │  - delay_until (datetime | None)             │ │ │
 │  │  │  - lock (threading.Lock)                     │ │ │
 │  │  └──────────────────────────────────────────────┘ │ │
 │  │  ┌──────────────────────────────────────────────┐ │ │
@@ -192,6 +193,18 @@ def format_response(emoji: str, message: str, break_summary: str) -> str:
 - **String formatting:** Simple f-string for clarity and performance
 - **Structured output:** Exact format required by regex validation patterns
 
+### 6. Integration Snapshot Tool
+
+**Function:** `get_state_snapshot()`
+
+**Purpose:** Provide a machine-readable JSON payload describing the agent state for external dashboards (FastAPI webapp) and automations.
+
+**Implementation Highlights:**
+- Acquires the state lock and calls `_update_stress()` before reporting values.
+- Computes elapsed timers (`seconds_since_last_break`, `cooldown_seconds_remaining`, `delay_seconds_remaining`) and cleans up `delay_until` once the penalty expires.
+- Serialises timestamps using ISO-8601 strings to stay JSON-compatible without custom encoders.
+- Enables downstream services to stay in sync without parsing human-readable tool responses.
+
 ## Thread Safety
 
 ### Why Thread Safety Matters
@@ -303,6 +316,16 @@ def take_break(self):
                  ↓
 7. Repeat from step 2
 ```
+
+## FastAPI Dashboard
+
+The optional dashboard (`webapp/`) keeps humans in the loop without modifying MCP behaviour:
+
+- **Process model:** `webapp.mcp_client.MCPClient` launches (or attaches to) the existing `main.py` MCP server via stdio JSON-RPC, performs the `initialize` handshake, and serialises every `tools/call` request.
+- **State endpoint:** `GET /api/state` calls the `get_state_snapshot` tool. Successful responses return `{ "status": "ok", "snapshot": ... }`; slow or failed calls downgrade the status to `degraded`/`offline` so the UI can surface issues.
+- **Dashboard UI:** `GET /` serves a static HTML/JS page with gauges for stress and boss alert levels, cooldown timers, and recent timestamps. The page polls the state endpoint every few seconds.
+- **Configuration:** Environment variables (`CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN`) let developers customise how the dashboard spawns or connects to the MCP server.
+- **Graceful shutdown:** When FastAPI stops, it closes the MCP process to avoid orphaned children during development.
 
 ## Design Decisions & Tradeoffs
 

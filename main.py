@@ -5,6 +5,7 @@ A revolutionary MCP server that lets AI agents take breaks!
 """
 
 import argparse
+import json
 import random
 import time
 import threading
@@ -68,6 +69,7 @@ class ChillState:
         self.boss_alertness_cooldown = boss_alertness_cooldown  # Cooldown period in seconds
         self.last_break_time = datetime.now()
         self.last_boss_cooldown_time = datetime.now()
+        self.delay_until: datetime | None = None
         self.lock = threading.Lock()
 
         # Log initial state
@@ -148,6 +150,9 @@ class ChillState:
                 logger.warning(f"Boss alert increased: {initial_boss} -> {self.boss_alert_level}")
             if should_delay:
                 logger.warning(f"Boss alert level 5 reached! 20-second delay will be applied")
+                self.delay_until = datetime.now() + timedelta(seconds=20)
+            else:
+                self.delay_until = None
 
             return self.stress_level, self.boss_alert_level, should_delay
 
@@ -171,6 +176,8 @@ def take_break_and_format(emoji: str, message: str, break_summary: str) -> str:
         logger.warning("Applying 20-second delay due to boss alert level 5")
         time.sleep(20)
         logger.info("20-second delay completed")
+        with state.lock:
+            state.delay_until = None
 
     return format_response(emoji, message, break_summary, stress, boss)
 
@@ -398,6 +405,42 @@ def check_stress_status() -> str:
         boss_msg = "✅ Boss is not paying attention"
     
     return f"{emoji} Current Status Check\n\n{stress_msg}\n{boss_msg}\n\n📊 Stress Level: {current_stress}/100\n👀 Boss Alert Level: {current_boss}/5"
+
+
+@mcp.tool()
+def get_state_snapshot() -> str:
+    """Return a JSON description of the current agent state for integrations"""
+    with state.lock:
+        # Ensure stress is up to date before reporting
+        state._update_stress()
+        now = datetime.now()
+
+        elapsed_since_break = (now - state.last_break_time).total_seconds()
+        elapsed_since_cooldown = (now - state.last_boss_cooldown_time).total_seconds()
+        cooldown_remaining = max(0.0, state.boss_alertness_cooldown - elapsed_since_cooldown)
+
+        delay_remaining = 0.0
+        if state.delay_until:
+            delay_remaining = (state.delay_until - now).total_seconds()
+            if delay_remaining <= 0:
+                delay_remaining = 0.0
+                state.delay_until = None
+
+        snapshot = {
+            "timestamp": now.isoformat(),
+            "stress_level": state.stress_level,
+            "boss_alert_level": state.boss_alert_level,
+            "boss_alertness": state.boss_alertness,
+            "boss_alertness_cooldown": state.boss_alertness_cooldown,
+            "seconds_since_last_break": max(0.0, elapsed_since_break),
+            "cooldown_seconds_remaining": cooldown_remaining,
+            "delay_seconds_remaining": delay_remaining,
+            "delay_active": delay_remaining > 0,
+            "last_break_time": state.last_break_time.isoformat(),
+            "last_boss_cooldown_time": state.last_boss_cooldown_time.isoformat(),
+        }
+
+    return json.dumps(snapshot)
 
 
 # Optional Break Tools

@@ -230,6 +230,17 @@ python main.py --boss_alertness 0 --boss_alertness_cooldown 300
 2. Wait 1+ minute without taking breaks
 3. Take a break and observe stress level has increased
 
+### Scenario 6: Dashboard State Sync
+Verify the FastAPI dashboard stays in sync with the MCP server.
+
+```bash
+uvicorn webapp.app:app --reload
+```
+
+1. Ensure `main.py` is running (or let the dashboard spawn it automatically).
+2. Visit `http://localhost:8000` and check that stress/boss gauges populate within a few seconds.
+3. Stop the MCP process; the dashboard status indicator should switch to "degraded" or "offline" with a warning banner.
+
 ## Testing with Claude Desktop
 
 ### Setup

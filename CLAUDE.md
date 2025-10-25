@@ -46,19 +46,11 @@ main.py (500+ lines)
 │   ├── Applies 20s delay if boss_alert_level == 5
 │   └── Calls format_response() with state values
 │
-└── 12 MCP Tools (@mcp.tool decorators)
-    ├── Basic: take_a_break, watch_netflix, show_meme
-    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
-                  deep_thinking, email_organizing
-    ├── Status: check_stress_status
-    └── Optional: chimaek, leave_work, company_dinner
-=======
 └── 11 MCP Tools (@mcp.tool decorators)
     ├── Basic: take_a_break, watch_netflix, show_meme
     ├── Advanced: bathroom_break, coffee_mission, urgent_call,
     │             deep_thinking, email_organizing
     └── Optional: chimaek, leave_work, company_dinner
->>>>>>> origin/main
 ```
 
 ## File Structure
@@ -410,7 +402,7 @@ wc -l main.py
 
 2. **Tool lists** - Keep synchronized across files
 
-   - README.md: Features section with all 8 tools
+   - README.md: Features section with all 11 tools
    - CLAUDE.md: Quick Architecture Overview tool list
    - PROJECT_OVERVIEW.md: Features Checklist
 
@@ -434,7 +426,7 @@ Before committing, verify consistency:
 grep -n "main.py.*lines" CLAUDE.md PROJECT_OVERVIEW.md
 
 # Check for tool counts
-grep -n "8 tools" README.md CLAUDE.md PROJECT_OVERVIEW.md
+grep -n "11 tools" README.md CLAUDE.md PROJECT_OVERVIEW.md
 
 # Check for CLAUDE.md descriptions
 grep -n "CLAUDE.md" README.md PROJECT_OVERVIEW.md

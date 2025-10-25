@@ -71,15 +71,11 @@ python main.py --boss_alertness 50 --boss_alertness_cooldown 10
 7. `deep_thinking` - Pretend to think deeply while spacing out
 8. `email_organizing` - Email organization while online shopping
 
-**Status Tools:**
-
-9. `check_stress_status` - Check current stress and boss alert levels without taking a break
-
 **Optional Break Tools (Bonus Features):**
 
-10. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
-11. `leave_work` - Immediately leave work - ultimate stress relief
-12. `company_dinner` - Company dinner (회식) with random events
+9. `chimaek` - Virtual chicken & beer (치맥) - Korean stress relief combo
+10. `leave_work` - Immediately leave work - ultimate stress relief
+11. `company_dinner` - Company dinner (회식) with random events
 
 ### State Management System
 

@@ -89,14 +89,10 @@ python tests/run_all_tests.py
 - [x] `deep_thinking` - Pretend thinking
 - [x] `email_organizing` - Email + shopping
 
-**Status (1):**
-- [x] `check_stress_status` - View current state without taking break
-
 **Optional (3):**
 - [x] `chimaek` - Virtual chicken & beer (Korean style)
 - [x] `leave_work` - Immediately leave work
 - [x] `company_dinner` - Company dinner with random events
->>>>>>> origin/main
 
 ### ✅ State Management
 - [x] Stress Level (0-100) with auto-increment

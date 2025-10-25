@@ -4,14 +4,31 @@
 
 The ChillMCP project includes comprehensive tests to validate all functionality required by the SKT AI Summit Hackathon specification. The test suite is organized into 5 focused modules covering all evaluation criteria.
 
+**Two test runners are available:**
+- **Quick Tests** (`run_quick_tests.py`) - Fast CI/CD validation (~30 seconds)
+- **Comprehensive Tests** (`run_all_tests.py`) - Full validation for submission (~3-5 minutes)
+
 ## Quick Start
 
-### Run All Tests (Recommended)
+### Quick Tests (CI/CD - Recommended for Development)
+```bash
+python tests/run_quick_tests.py
+```
+
+Fast test suite optimized for CI/CD pipelines and rapid development feedback.
+- **Runtime:** ~30 seconds
+- **Tests:** CLI parameters, MCP protocol, simple state tests, response format
+- **Use for:** Pull requests, quick validation, rapid iteration
+
+### Comprehensive Tests (Pre-Submission - Required Before Submission)
 ```bash
 python tests/run_all_tests.py
 ```
 
-This master test runner executes all test suites in order and provides score estimation.
+Full test suite with time-based mechanics validation and score estimation.
+- **Runtime:** ~3-5 minutes
+- **Tests:** All 5 test suites including comprehensive state management
+- **Use for:** Final validation, major changes, submission preparation
 
 ### Run Individual Test Suites
 ```bash
@@ -342,7 +359,26 @@ ChillMCP is ready for submission!
 
 ## Continuous Integration
 
-For CI/CD pipelines, use the comprehensive test runner:
+### Quick CI Tests (Recommended for CI/CD)
+
+For fast CI/CD feedback on pull requests:
+
+```bash
+#!/bin/bash
+set -e
+
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
+echo "Running quick test suite..."
+python tests/run_quick_tests.py
+
+echo "All quick tests passed!"
+```
+
+### Comprehensive CI Tests
+
+For main branch or release validation:
 
 ```bash
 #!/bin/bash
@@ -356,6 +392,8 @@ python tests/run_all_tests.py
 
 echo "All tests passed!"
 ```
+
+### Granular Control
 
 Or run individual test suites for granular control:
 
@@ -423,10 +461,17 @@ Individual test suite runtimes (optimized):
 |------------|---------|-------|
 | CLI Parameters | ~10 seconds | Includes 6s cooldown wait |
 | MCP Protocol | ~5 seconds | Protocol validation |
-| State Management | ~2.5 minutes | Includes 65s stress test + 20s delay test |
+| State Management (Full) | ~2.5 minutes | Includes 65s stress test + 20s delay test |
+| State Management (Quick) | ~10 seconds | Fast version, basic validation only |
 | Response Format | ~5 seconds | Format validation |
 | Integration Scenarios | ~1.5 minutes | Includes 65s stress test + 18s cooldown |
-| **Total** | **~3 minutes** | Full comprehensive suite |
+
+**Test Runner Comparison:**
+
+| Runner | Runtime | Test Suites | Use Case |
+|--------|---------|-------------|----------|
+| `run_quick_tests.py` | ~30 seconds | CLI + MCP + Simple State + Format | CI/CD, PRs, rapid dev |
+| `run_all_tests.py` | ~3-5 minutes | All 5 suites (full state + integration) | Pre-submission, releases |
 
 ## Reporting Issues
 

@@ -84,10 +84,12 @@ chill-mcp/
 └── tests/                     # Comprehensive test suite
     ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
     ├── test_mcp_protocol.py        # MCP protocol compliance
-    ├── test_state_management.py    # State logic (30% of score)
+    ├── test_state_management.py    # State logic (30% of score) - Full
+    ├── simple_state_test.py        # State logic - Quick version
     ├── test_response_format.py     # Response format validation
     ├── test_integration_scenarios.py # End-to-end scenarios
-    └── run_all_tests.py            # Master test runner
+    ├── run_quick_tests.py          # Quick test runner (CI/CD)
+    └── run_all_tests.py            # Comprehensive test runner
 ```
 
 ## Development Setup
@@ -124,13 +126,17 @@ python main.py --help
 ### Testing
 
 ```bash
-# Run all tests (recommended)
+# Quick tests (CI/CD - ~30 seconds)
+python tests/run_quick_tests.py
+
+# Comprehensive tests (Pre-submission - ~3-5 minutes)
 python tests/run_all_tests.py
 
 # Or run individual test suites
 python tests/test_cli_parameters.py          # Critical gate
 python tests/test_mcp_protocol.py            # MCP protocol
 python tests/test_state_management.py        # State logic (30% of score)
+python tests/simple_state_test.py            # Quick state tests
 python tests/test_response_format.py         # Format validation
 python tests/test_integration_scenarios.py   # End-to-end scenarios
 
@@ -302,24 +308,24 @@ python tests/test_state_management.py
 
 ### Testing Changes
 
-**Quick validation:**
+**Quick validation (CI/CD - ~30 seconds):**
 
 ```bash
 # 1. Syntax check
 python -m py_compile main.py
 
-# 2. Run critical tests
-python tests/test_cli_parameters.py
+# 2. Run quick test suite
+python tests/run_quick_tests.py
 
-# 3. Run server briefly
+# 3. Run server briefly (optional)
 python main.py --boss_alertness 100 --boss_alertness_cooldown 5
 # (Ctrl+C to exit)
 ```
 
-**Full validation:**
+**Full validation (Pre-submission - ~3-5 minutes):**
 
 ```bash
-# Run all tests (recommended)
+# Run comprehensive tests (recommended before submission)
 python tests/run_all_tests.py
 
 # Test with Claude Desktop (optional)
@@ -645,9 +651,11 @@ Before committing changes:
 ### Test Commands
 
 ```bash
-python tests/run_all_tests.py                # Run all tests (recommended)
+python tests/run_quick_tests.py              # Quick tests (~30s, CI/CD)
+python tests/run_all_tests.py                # Full tests (~3-5 min, pre-submission)
 python tests/test_cli_parameters.py          # Critical gate
-python tests/test_state_management.py        # State logic (30% of score)
+python tests/test_state_management.py        # State logic (30% of score) - Full
+python tests/simple_state_test.py            # State logic - Quick
 python tests/test_response_format.py         # Format validation
 python main.py --help                        # Verify CLI params
 ```

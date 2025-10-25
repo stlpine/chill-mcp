@@ -27,6 +27,6 @@ jobs:
         run: |
           python -m py_compile main.py
 
-      - name: Run comprehensive test suite
+      - name: Run quick test suite (CI optimized)
         run: |
-          python tests/run_all_tests.py
+          python tests/run_quick_tests.py

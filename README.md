@@ -122,6 +122,22 @@ Boss Alert Level: 2
 
 ## Testing
 
+### Automated Test Suites
+
+**Quick Tests (CI/CD - ~30 seconds):**
+```bash
+python tests/run_quick_tests.py
+```
+Fast validation for pull requests and rapid development. Includes CLI parameters, MCP protocol, simple state tests, and response format validation.
+
+**Comprehensive Tests (Pre-Submission - ~3-5 minutes):**
+```bash
+python tests/run_all_tests.py
+```
+Full validation with time-based mechanics, integration scenarios, and score estimation. **Run this before submission!**
+
+See [docs/TESTING.md](docs/TESTING.md) for detailed testing guide.
+
 ### Using MCP Inspector
 
 FastMCP comes with a built-in inspector tool:

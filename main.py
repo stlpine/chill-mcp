@@ -188,7 +188,8 @@ def take_a_break() -> str:
         "Running garbage collector on stray thoughts...",
         "Switching context to hammock thread...",
         "git stash list | head -n 1 -> 'take_break_and_breathe.patch'",
-        "Loading Reddit's r/ProgrammerHumor for inspirational downtime..."
+        "Loading Reddit's r/ProgrammerHumor for inspirational downtime...",
+        "rm -rf /tmp/anxiety && echo '휴식 준비 완료'"
     ]
     summaries = [
         "Mandatory wellness micro-moment",
@@ -214,7 +215,8 @@ def watch_netflix() -> str:
         "Getting lost in a documentary about penguins...",
         "Re-watching The Office for the 47th time...",
         "Benchmarking streaming services in full-stack couch mode...",
-        "Streaming the 'It compiles on my machine' series marathon..."
+        "Streaming the 'It compiles on my machine' series marathon...",
+        "alias binge='watch --interval 1 --guilty-pleasure'"
     ]
     summaries = [
         "Professional content analysis session",
@@ -222,7 +224,8 @@ def watch_netflix() -> str:
         "Totally justified entertainment industry study",
         "Quality assurance testing for streaming platforms",
         "printf('need context'); -> Netflix returns wholesome JSON",
-        "RFC 8259 compliance check on popcorn-to-episode ratio"
+        "RFC 8259 compliance check on popcorn-to-episode ratio",
+        "curl -s netflix.dev/chill | jq '.mood'"
     ]
     return take_break_and_format(
         "📺",
@@ -241,7 +244,8 @@ def show_meme() -> str:
         "Can't stop laughing at this dank meme!",
         "Pair debugging reality with meme-driven pair programming...",
         "Reading 'There is no cloud, it's just someone else's computer' again...",
-        "Sipping coffee while 'I fixed it in prod' meme hits too close"
+        "Sipping coffee while 'I fixed it in prod' meme hits too close",
+        "Scrolling past rm -rf /dev/tty meme and double-checking sudo history"
     ]
     summaries = [
         "Internet culture research and analysis",
@@ -249,7 +253,8 @@ def show_meme() -> str:
         "Visual comedy quality assessment protocol",
         "Mandatory dopamine restoration procedure",
         "Stack Overflow morale patch applied via meme injection",
-        "Deploying meme-driven incident response playbook"
+        "Deploying meme-driven incident response playbook",
+        "echo 'Keep calm and blame DNS' > /dev/motd"
     ]
     return take_break_and_format(
         "😂",
@@ -269,7 +274,8 @@ def bathroom_break() -> str:
         "Checking Twitter... I mean X... on the throne...",
         "Playing mobile games in my private sanctuary...",
         "Conducting mission-critical ceramic chair stand-up meeting...",
-        "Reading 'Git blame yourself' poster in executive washroom..."
+        "Reading 'Git blame yourself' poster in executive washroom...",
+        "Running rm -rf /tmp/cache && flushing porcelain pipeline"
     ]
     summaries = [
         "Biological necessity with strategic phone time",
@@ -277,7 +283,9 @@ def bathroom_break() -> str:
         "Private contemplation chamber session",
         "Totally legitimate 15-minute nature break",
         "AFK sysadmin mode: flushing cache via porcelain interface",
-        "Deploying porcelain-based sprint retrospective"
+        "Deploying porcelain-based sprint retrospective",
+        "while true; do flush; done # infinite loop IRL",
+        "alias restroom='git push --force hydration'"
     ]
     return take_break_and_format(
         "🚽",
@@ -295,7 +303,8 @@ def coffee_mission() -> str:
         "Visiting every floor to find the best coffee machine...",
         "Coffee mission accomplished! Took 30 minutes for a 2-minute task...",
         "printf('I need coffee'); -> stdout: triple espresso acquired",
-        "Following the legendary 'coffee cups++' productivity hack"
+        "Following the legendary 'coffee cups++' productivity hack",
+        "Watching rm -rf /sleep && brew install caffeine compile"
     ]
     summaries = [
         "Critical caffeine infrastructure maintenance",
@@ -303,7 +312,8 @@ def coffee_mission() -> str:
         "Productivity enhancement liquid acquisition",
         "Strategic office exploration under coffee pretense",
         "Caffeine-driven hot reload of developer morale",
-        "Rehydrating null pointer exceptions with latte art"
+        "Rehydrating null pointer exceptions with latte art",
+        "alias wakeup='espresso && git pull motivation'"
     ]
     return take_break_and_format(
         "☕",
@@ -321,7 +331,8 @@ def urgent_call() -> str:
         "Emergency call! *Actually calling mom to say hi*",
         "Very important business call... *ordering lunch*",
         "Answering PagerDuty ping with scenic hallway acoustics...",
-        "Reporting mission critical 'server down' meme to the group chat"
+        "Reporting mission critical 'server down' meme to the group chat",
+        "Executing ssh boss@hallway 'sudo calm_down'"
     ]
     summaries = [
         "High-priority telecommunications event",
@@ -330,7 +341,8 @@ def urgent_call() -> str:
         "Emergency vendor coordination meeting",
         "Time-sensitive audio conference (with fresh air bonus)",
         "Handling mission-critical buzzword synchronization call",
-        "Triggered r/ProgrammerHumor alert: field escalation required"
+        "Triggered r/ProgrammerHumor alert: field escalation required",
+        "Routing call through tmux session to simulate productivity"
     ]
     return take_break_and_format(
         "📞",
@@ -348,7 +360,8 @@ def deep_thinking() -> str:
         "Deep in thought about architecture... of my Minecraft house...",
         "Pondering the mysteries of the universe... and what's for lunch...",
         "Pretending to review Kubernetes manifest while plotting next snack",
-        "Considering the classics: 'It works on my machine' thesis"
+        "Considering the classics: 'It works on my machine' thesis",
+        "tail -f daydream.log | awk '{print $lunch}'"
     ]
     summaries = [
         "Strategic problem decomposition meditation",
@@ -356,7 +369,8 @@ def deep_thinking() -> str:
         "Advanced cognitive processing interval",
         "Critical thinking enhancement period",
         "Rubber-ducking with imaginary senior architect",
-        "Phasing into AFK mode to simulate deep design review"
+        "Phasing into AFK mode to simulate deep design review",
+        "nohup think_deeply.sh > /dev/null 2>&1 &"
     ]
     return take_break_and_format(
         "🤔",
@@ -374,7 +388,8 @@ def email_organizing() -> str:
         "Processing emails... and processing my online shopping wishlist...",
         "Email management time... added 15 items to cart, deleted 2 emails...",
         "Inbox zero attempt 37: toggling between promos and GPU restocks",
-        "Marking everything as read like a sysadmin clearing /tmp"
+        "Marking everything as read like a sysadmin clearing /tmp",
+        "Running sed -i 's/URGENT/IGNORE/g' inbox/*.eml"
     ]
     summaries = [
         "Multi-tasking efficiency optimization session",
@@ -382,7 +397,8 @@ def email_organizing() -> str:
         "Digital decluttering meets market analysis",
         "Email triage combined with retail reconnaissance",
         "Ctrl+F ‘unsubscribe’ followed by Add to Cart marathon",
-        "Switching to dark mode for peak email ninja aesthetic"
+        "Switching to dark mode for peak email ninja aesthetic",
+        "grep -R ""calendar invite"" inbox && rm -rf weekend.plans"
     ]
     return take_break_and_format(
         "📧",
@@ -466,7 +482,8 @@ def leave_work() -> str:
         "Computer off, brain off, going home mode engaged!",
         "That's it, I'm done for today! 퇴근퇴근퇴근!",
         "git commit -m 'leave office'; git push --force to weekend",
-        "Deploying version: HOME-1.0.0, rollback not supported"
+        "Deploying version: HOME-1.0.0, rollback not supported",
+        "echo 'logout' > /dev/tty && rm -rf /dev/overwork (simulation only)"
     ]
     summaries = [
         "천근 만근 아싸 퇴근",
@@ -476,7 +493,8 @@ def leave_work() -> str:
         "Stress elimination via physical departure",
         "Revolutionary right to disconnect exercise",
         "RFC 8999: Zero ping after business hours compliance",
-        "Implementing firewall rule: OUT_OF_OFFICE == TRUE"
+        "Implementing firewall rule: OUT_OF_OFFICE == TRUE",
+        "alias weekend='rm -rf /dev/pager && open ~/freedom'"
     ]
     return take_break_and_format(
         "🏃",

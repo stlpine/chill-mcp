@@ -24,27 +24,41 @@
         <h2>최근 실행 결과</h2>
         <div class="result-status" data-result="status">아직 실행한 도구가 없습니다.</div>
         <div class="result-body" data-result="body" hidden>
-          <div class="result-header">
-            <span class="result-emoji" data-result="emoji">🙂</span>
-            <div>
-              <div class="result-message" data-result="message"></div>
-              <div class="result-summary" data-result="summary"></div>
+          <div class="robot-wrapper">
+            <div class="robot-figure">
+              <div class="robot-head">
+                <div class="robot-screen">
+                  <img data-result="meme-image" alt="" hidden />
+                  <div class="robot-screen-caption" data-result="meme-caption"></div>
+                </div>
+                <div class="robot-eyes"></div>
+              </div>
+              <div class="robot-body"></div>
             </div>
           </div>
-          <dl class="result-metrics">
-            <div>
-              <dt>Stress Level</dt>
-              <dd data-result="stress">-</dd>
+          <div class="result-details">
+            <div class="result-header">
+              <span class="result-emoji" data-result="emoji">🙂</span>
+              <div>
+                <div class="result-message" data-result="message"></div>
+                <div class="result-summary" data-result="summary"></div>
+              </div>
             </div>
-            <div>
-              <dt>Boss Alert Level</dt>
-              <dd data-result="boss">-</dd>
-            </div>
-            <div>
-              <dt>Cooldown</dt>
-              <dd data-result="cooldown">-</dd>
-            </div>
-          </dl>
+            <dl class="result-metrics">
+              <div>
+                <dt>Stress Level</dt>
+                <dd data-result="stress">-</dd>
+              </div>
+              <div>
+                <dt>Boss Alert Level</dt>
+                <dd data-result="boss">-</dd>
+              </div>
+              <div>
+                <dt>Cooldown</dt>
+                <dd data-result="cooldown">-</dd>
+              </div>
+            </dl>
+          </div>
         </div>
         <div class="error-banner" role="status" data-result="error" hidden></div>
       </section>

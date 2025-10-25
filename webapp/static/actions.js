@@ -8,6 +8,8 @@ const resultSummary = document.querySelector('[data-result="summary"]');
 const resultStress = document.querySelector('[data-result="stress"]');
 const resultBoss = document.querySelector('[data-result="boss"]');
 const resultCooldown = document.querySelector('[data-result="cooldown"]');
+const memeImage = document.querySelector('[data-result="meme-image"]');
+const memeCaption = document.querySelector('[data-result="meme-caption"]');
 const eventsList = document.querySelector('[data-events="list"]');
 
 async function loadActions() {
@@ -79,7 +81,7 @@ function showResultLoading(action) {
 }
 
 function updateResult(payload) {
-  const { tool, result, snapshot } = payload;
+  const { tool, result, snapshot, meme } = payload;
   resultStatus.textContent = `${tool.emoji} ${tool.label} 실행 완료`;
   resultBody.hidden = false;
   resultError.hidden = true;
@@ -93,6 +95,16 @@ function updateResult(payload) {
     ? `${Math.round(snapshot.cooldown_seconds_remaining)}s`
     : '-';
   resultCooldown.textContent = cooldownText;
+
+  if (meme && meme.image) {
+    memeImage.hidden = false;
+    memeImage.src = meme.image;
+    memeImage.alt = meme.alt ?? meme.title ?? 'meme';
+    memeCaption.textContent = meme.caption ?? '';
+  } else {
+    memeImage.hidden = true;
+    memeCaption.textContent = '';
+  }
 }
 
 function showError(message) {
@@ -100,6 +112,10 @@ function showError(message) {
   resultError.hidden = false;
   resultError.textContent = message;
   resultBody.hidden = true;
+  if (memeImage) {
+    memeImage.hidden = true;
+    memeCaption.textContent = '';
+  }
 }
 
 function formatMetric(value, suffix = '') {
@@ -134,6 +150,13 @@ function renderEvents(events) {
     title.textContent = `${event.emoji ?? ''} ${event.label ?? event.tool}`;
     const summary = document.createElement('p');
     summary.textContent = event.break_summary || event.message || '';
+    if (event.meme?.title) {
+      const memeTitle = document.createElement('span');
+      memeTitle.className = 'event-meme-title';
+      memeTitle.textContent = `(${event.meme.title})`;
+      summary.appendChild(document.createTextNode(' '));
+      summary.appendChild(memeTitle);
+    }
     const time = document.createElement('time');
     time.dateTime = event.timestamp;
     time.textContent = formatRelative(event.timestamp);

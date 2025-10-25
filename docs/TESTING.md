@@ -246,7 +246,7 @@ Test the browser-based action launcher and API endpoints.
 
 1. Open `http://localhost:8000/actions`.
 2. Trigger one of the tools (e.g., "Take a Break").
-3. Confirm the result panel updates with the emoji/message and the stress/boss values change.
+3. Confirm the result panel updates with the emoji/message, the robot 아바타 화면에 맞춤 밈이 표시되고, 스트레스/보스 수치가 바뀝니다.
 4. Check that `/api/events` now lists the action and the dashboard timeline reflects the update.
 
 ## Testing with Claude Desktop

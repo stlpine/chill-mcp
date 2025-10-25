@@ -15,6 +15,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .mcp_client import MCPClient, MCPError, MCPProcessError, MCPTimeoutError, get_state_snapshot
+from .memes import select_meme
 
 LOGGER = logging.getLogger(__name__)
 
@@ -148,6 +149,7 @@ def create_app(client: Optional[MCPClient] = None) -> FastAPI:
             parsed = parse_tool_response(text)
             timestamp = _now_iso()
             snapshot = await get_state_snapshot(mcp_client)
+            meme = select_meme(tool_name, parsed, snapshot)
 
             event_entry = {
                 "id": f"{tool_name}-{timestamp}",
@@ -156,6 +158,7 @@ def create_app(client: Optional[MCPClient] = None) -> FastAPI:
                 "label": tool_meta["label"],
                 **parsed,
                 "cooldown_seconds_remaining": snapshot.get("cooldown_seconds_remaining"),
+                "meme": meme,
             }
             await record_event(event_entry)
 
@@ -164,6 +167,7 @@ def create_app(client: Optional[MCPClient] = None) -> FastAPI:
                 "tool": tool_meta,
                 "result": parsed,
                 "snapshot": snapshot,
+                "meme": meme,
             }
         except MCPTimeoutError as exc:
             LOGGER.warning("MCP timeout while running %s: %s", tool_name, exc)

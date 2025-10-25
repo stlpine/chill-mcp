@@ -116,6 +116,7 @@ python tests/run_all_tests.py
 - [x] Real-time dashboard (`/`) with status indicators
 - [x] Action launcher (`/actions`) with tool catalog & results
 - [x] Event log (`/api/events`) and timeout/offline fallbacks
+- [x] Robot 아바타가 도구 실행 후 상황에 맞는 밈을 표시
 
 ### ✅ Response Format
 - [x] MCP specification compliant

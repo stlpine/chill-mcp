@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 230">
+  <defs>
+    <linearGradient id="burnGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f2937" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="230" rx="28" fill="url(#burnGradient)" />
+  <g opacity="0.15" fill="#f97316">
+    <circle cx="40" cy="200" r="70" />
+    <circle cx="310" cy="60" r="60" />
+  </g>
+  <rect x="40" y="54" width="240" height="140" rx="24" fill="#111827" />
+  <g stroke="#f87171" stroke-width="8" stroke-linecap="round">
+    <path d="M100 150 Q160 200 220 150" />
+    <path d="M130 88 Q160 112 190 88" />
+  </g>
+  <g fill="#facc15">
+    <circle cx="120" cy="120" r="14" />
+    <circle cx="200" cy="120" r="14" />
+  </g>
+  <g transform="translate(160 40)" fill="#f97316" opacity="0.9">
+    <path d="M0 -26 L14 14 L0 6 L-14 14 Z" />
+    <animateTransform attributeName="transform" attributeType="XML" type="translate" values="160 40; 160 36; 160 40" dur="1.6s" repeatCount="indefinite" />
+  </g>
+  <text x="160" y="206" font-family="'DM Sans', 'Pretendard', sans-serif" font-weight="600" font-size="26" text-anchor="middle" fill="#f87171">
+    SYSTEM OVERHEAT
+  </text>
+</svg>

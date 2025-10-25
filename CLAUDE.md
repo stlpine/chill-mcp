@@ -59,7 +59,8 @@ main.py (551 lines)
 webapp/ (FastAPI dashboard)
 ├── app.py        - FastAPI factory, routes, static files
 ├── mcp_client.py - JSON-RPC bridge spawning/communicating with MCP
-└── static/, templates/ - Dashboard assets (styles, scripts, HTML)
+├── memes.py      - State-aware meme selector
+└── static/, templates/ - Dashboard assets (styles, scripts, HTML, SVG memes)
 ```
 
 **Web endpoints overview:**
@@ -69,6 +70,7 @@ webapp/ (FastAPI dashboard)
 - `GET /api/actions` – 노출할 도구 목록
 - `POST /api/actions/{tool}` – MCP 도구 실행 (20초 지연 포함 가능)
 - `GET /api/events` – 최근 실행 이벤트 로그
+- `/actions` 화면의 로봇 아바타는 도구 실행 결과에 맞는 밈을 `webapp/memes.py` 로직으로 표시
 
 ## File Structure
 

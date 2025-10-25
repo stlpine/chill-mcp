@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 230">
+  <defs>
+    <linearGradient id="celebrateGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbcfe8" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="230" rx="28" fill="url(#celebrateGradient)" />
+  <rect x="46" y="58" width="228" height="128" rx="26" fill="#1f2937" opacity="0.9" />
+  <g fill="#fcd34d">
+    <circle cx="120" cy="118" r="14" />
+    <circle cx="200" cy="118" r="14" />
+  </g>
+  <path d="M104 152 Q160 188 216 152" stroke="#fcd34d" stroke-width="10" stroke-linecap="round" fill="none" />
+  <g opacity="0.9">
+    <path d="M60 60 l12 -28 l12 28" fill="#fde68a" />
+    <path d="M250 68 l18 -32 l18 32" fill="#fbbf24" />
+    <path d="M120 46 l14 -24 l14 24" fill="#fef08a" />
+  </g>
+  <g stroke="#a855f7" stroke-width="10" stroke-linecap="round" opacity="0.9">
+    <path d="M90 174 q20 18 40 0" />
+    <path d="M190 174 q20 18 40 0" />
+  </g>
+  <text x="160" y="206" font-family="'DM Sans', 'Pretendard', sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#1f2937">
+    FREEDOM MODE
+  </text>
+</svg>

@@ -124,6 +124,7 @@ Use environment variables to customise how the backend talks to the MCP server:
   - `GET /api/events` – Recent break history for dashboards
   - `GET /` – Real-time dashboard displaying gauges and recent events
   - `GET /actions` – Action launcher page with quick access buttons
+- **Robot avatar UI:** The actions console renders a meme on the robot’s face after each tool call, reflecting stress/boss levels and special break types.
 - **Timeout awareness:** If the MCP server stops responding, the dashboard highlights a warning and shows the latest cached snapshot.
 - **Configurable command:** Override the MCP launch command with `CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, or `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN` for development flexibility.
 

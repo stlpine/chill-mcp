@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 230">
+  <defs>
+    <linearGradient id="coffeeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="230" rx="28" fill="url(#coffeeGradient)" />
+  <rect x="48" y="56" width="224" height="132" rx="24" fill="#0f172a" opacity="0.85" />
+  <g fill="#f8fafc">
+    <circle cx="120" cy="120" r="16" />
+    <circle cx="200" cy="120" r="16" />
+  </g>
+  <path d="M110 154 Q160 178 210 154" stroke="#38bdf8" stroke-width="10" stroke-linecap="round" fill="none" />
+  <g transform="translate(160 70)">
+    <path d="M-26 0 h52 v42 a16 16 0 0 1 -16 16 h-20 a16 16 0 0 1 -16 -16z" fill="#f97316" />
+    <path d="M26 12 q24 -2 24 18 t-24 18" fill="none" stroke="#f8fafc" stroke-width="6" stroke-linecap="round" />
+  </g>
+  <g fill="#bae6fd" opacity="0.8">
+    <rect x="70" y="86" width="180" height="12" rx="6" />
+    <rect x="90" y="102" width="140" height="8" rx="4" />
+  </g>
+  <text x="160" y="206" font-family="'DM Sans', 'Pretendard', sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0f172a">
+    COFFEE BOOST
+  </text>
+</svg>

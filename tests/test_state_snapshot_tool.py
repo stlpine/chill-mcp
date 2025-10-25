@@ -23,8 +23,13 @@ MAIN_PATH = os.path.join(PROJECT_ROOT, "main.py")
 def send_mcp_request(process: subprocess.Popen[str], request: Dict[str, Any]) -> Dict[str, Any]:
     process.stdin.write(json.dumps(request) + "\n")
     process.stdin.flush()
-    response_line = process.stdout.readline()
-    return json.loads(response_line) if response_line else {}
+    while True:
+        response_line = process.stdout.readline()
+        if not response_line:
+            return {}
+        response_line = response_line.strip()
+        if response_line:
+            return json.loads(response_line)
 
 
 def initialize_mcp_session(process: subprocess.Popen[str]) -> None:

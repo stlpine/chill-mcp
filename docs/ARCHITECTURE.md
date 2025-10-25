@@ -326,7 +326,7 @@ The optional dashboard (`webapp/`) keeps humans in the loop without modifying MC
 - **Dashboard UI:** `GET /` serves a static HTML/JS page with gauges for stress and boss alert levels, cooldown timers, and recent timestamps. The page polls the state endpoint every few seconds.
 - **Configuration:** Environment variables (`CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN`) let developers customise how the dashboard spawns or connects to the MCP server.
 - **Graceful shutdown:** When FastAPI stops, it closes the MCP process to avoid orphaned children during development.
-- **Meme selector:** `webapp/memes.py` chooses SVG assets based on stress/boss levels and recent tool usage so the robot avatar reflects the agent’s mood after each action.
+- **Meme selector:** `webapp/memes.py` queries meme-api.com (or uses fallbacks when `CHILL_MCP_DISABLE_MEME_FETCH=1`) to display context-aware images matching stress/boss levels and break type.
 
 ## Design Decisions & Tradeoffs
 

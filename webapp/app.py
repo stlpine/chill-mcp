@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import logging
 import asyncio
+import logging
 import re
 from collections import deque
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -46,7 +46,7 @@ EVENT_LOCK = asyncio.Lock()
 
 
 def _now_iso() -> str:
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def parse_tool_response(text: str) -> Dict[str, Any]:
@@ -142,11 +142,13 @@ def create_app(client: Optional[MCPClient] = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=f"Unknown tool: {tool_name}")
 
         try:
-            text = await mcp_client.call_tool_text(tool_name, timeout=35.0)
+            text = await mcp_client.call_tool_text(tool_name, timeout=45.0)
             parsed = parse_tool_response(text)
             timestamp = _now_iso()
             snapshot = await get_state_snapshot(mcp_client)
-            meme = select_meme(tool_name, parsed, snapshot)
+
+            loop = asyncio.get_running_loop()
+            meme = await loop.run_in_executor(None, select_meme, tool_name, parsed, snapshot)
 
             event_entry = {
                 "id": f"{tool_name}-{timestamp}",

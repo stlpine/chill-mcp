@@ -11,7 +11,7 @@ import time
 import threading
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastmcp import FastMCP
 
 # Parse command-line arguments
@@ -67,8 +67,8 @@ class ChillState:
         self.boss_alert_level = 0
         self.boss_alertness = boss_alertness  # Probability of boss alert increase (0-100)
         self.boss_alertness_cooldown = boss_alertness_cooldown  # Cooldown period in seconds
-        self.last_break_time = datetime.now()
-        self.last_boss_cooldown_time = datetime.now()
+        self.last_break_time = datetime.now(timezone.utc)
+        self.last_boss_cooldown_time = datetime.now(timezone.utc)
         self.delay_until: datetime | None = None
         self.lock = threading.Lock()
 
@@ -84,7 +84,7 @@ class ChillState:
             while True:
                 time.sleep(1)  # Check every second
                 with self.lock:
-                    now = datetime.now()
+                    now = datetime.now(timezone.utc)
                     elapsed = (now - self.last_boss_cooldown_time).total_seconds()
 
                     if elapsed >= self.boss_alertness_cooldown and self.boss_alert_level > 0:
@@ -102,7 +102,7 @@ class ChillState:
         Auto-increment stress based on time elapsed since last break.
         PRIVATE: Must be called with self.lock held.
         """
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
 
         # Add minimum 1 point per minute
@@ -136,10 +136,10 @@ class ChillState:
                 self.boss_alert_level = min(5, self.boss_alert_level + 1)
                 boss_alert_increased = True
                 # Reset cooldown timer when boss alert increases
-                self.last_boss_cooldown_time = datetime.now()
+                self.last_boss_cooldown_time = datetime.now(timezone.utc)
 
             # Reset last break time
-            self.last_break_time = datetime.now()
+            self.last_break_time = datetime.now(timezone.utc)
 
             # Check if we need to delay (boss_alert_level == 5)
             should_delay = (self.boss_alert_level == 5)
@@ -150,7 +150,7 @@ class ChillState:
                 logger.warning(f"Boss alert increased: {initial_boss} -> {self.boss_alert_level}")
             if should_delay:
                 logger.warning(f"Boss alert level 5 reached! 20-second delay will be applied")
-                self.delay_until = datetime.now() + timedelta(seconds=20)
+                self.delay_until = datetime.now(timezone.utc) + timedelta(seconds=20)
             else:
                 self.delay_until = None
 
@@ -413,7 +413,7 @@ def get_state_snapshot() -> str:
     with state.lock:
         # Ensure stress is up to date before reporting
         state._update_stress()
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
 
         elapsed_since_break = (now - state.last_break_time).total_seconds()
         elapsed_since_cooldown = (now - state.last_boss_cooldown_time).total_seconds()

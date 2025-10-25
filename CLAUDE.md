@@ -69,7 +69,7 @@ webapp/ (FastAPI dashboard)
 - `GET /api/actions` – 노출할 도구 목록
 - `POST /api/actions/{tool}` – MCP 도구 실행 (20초 지연 포함 가능)
 - `GET /api/events` – 최근 실행 이벤트 로그
-- `/` SPA 상의 로봇 아바타가 도구 실행 결과에 맞는 밈을 `webapp/memes.py` 로직으로 표시
+- `/` SPA 상의 밈 보드가 도구 실행 결과에 맞는 이미지를 `webapp/memes.py` 로직으로 인터넷에서 검색 (환경변수로 비활성화 가능)
 
 ## File Structure
 

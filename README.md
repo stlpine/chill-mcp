@@ -124,7 +124,7 @@ Use environment variables to customise how the backend talks to the MCP server:
   - `POST /api/actions/{tool}` – Trigger MCP tools and receive structured results
   - `GET /api/events` – Recent break history for dashboards
   - `GET /` – SPA that combines avatar, status board, action launcher, and timeline
-- **Robot avatar UI:** 페이지 좌측의 로봇 아바타가 각 도구 실행 이후 상황에 맞는 밈을 표시합니다.
+- **Meme-driven UI:** FastAPI 서버가 인터넷에서 상황별 밈 이미지를 검색해 아바타 영역에 표시합니다. 오프라인 환경에서는 `CHILL_MCP_DISABLE_MEME_FETCH=1` 로 설정하면 내부 기본 밈으로 대체됩니다.
 - **Timeout awareness:** If the MCP server stops responding, the dashboard highlights a warning and shows the latest cached snapshot.
 - **Configurable command:** Override the MCP launch command with `CHILL_MCP_COMMAND`, `CHILL_MCP_BOSS_ALERTNESS`, or `CHILL_MCP_BOSS_ALERTNESS_COOLDOWN` for development flexibility.
 

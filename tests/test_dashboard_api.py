@@ -7,8 +7,10 @@ from __future__ import annotations
 import json
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
+
+os.environ.setdefault("CHILL_MCP_DISABLE_MEME_FETCH", "1")
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
@@ -41,11 +43,11 @@ class FakeMCPClient:
         self.delay_active = False
         self.next_timeout: set[str] = set()
         self.calls: List[str] = []
-        self._last_break = datetime.utcnow() - timedelta(minutes=5)
-        self._last_cooldown = datetime.utcnow() - timedelta(seconds=90)
+        self._last_break = datetime.now(timezone.utc) - timedelta(minutes=5)
+        self._last_cooldown = datetime.now(timezone.utc) - timedelta(seconds=90)
 
     def _snapshot_payload(self) -> dict:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         elapsed_break = (now - self._last_break).total_seconds()
         elapsed_cooldown = (now - self._last_cooldown).total_seconds()
         remaining = max(0.0, self.cooldown_seconds - elapsed_cooldown)
@@ -76,9 +78,9 @@ class FakeMCPClient:
         self.stress_level = max(0, self.stress_level - 7)
         self.boss_alert_level = min(5, self.boss_alert_level + 1)
         self.delay_active = self.boss_alert_level >= 4
-        self._last_break = datetime.utcnow()
+        self._last_break = datetime.now(timezone.utc)
         if self.boss_alert_level > 0:
-            self._last_cooldown = datetime.utcnow()
+            self._last_cooldown = datetime.now(timezone.utc)
 
         return (
             "😌 Test Action\n\n"
@@ -136,10 +138,11 @@ def run_action_execution_updates_events() -> bool:
             payload = response.json()
             events_response = client.get("/api/events")
             events_payload = events_response.json()
+        meme_url = payload.get("meme", {}).get("image", "")
         return (
             response.status_code == 200
             and payload["status"] == "ok"
-            and payload["meme"]["image"].endswith(".svg")
+            and meme_url.startswith("http")
             and len(events_payload["events"]) == 1
             and events_payload["events"][0]["tool"] == "take_a_break"
         )

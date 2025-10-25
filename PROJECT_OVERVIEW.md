@@ -116,7 +116,7 @@ python tests/run_all_tests.py
 - [x] 단일 SPA(`/`)에 상태·아바타·타임라인·액션 런처 통합
 - [x] Action catalog (`/api/actions`) & trigger (`/api/actions/{tool}`)
 - [x] Event log (`/api/events`)와 timeout/offline fallbacks
-- [x] Robot 아바타가 도구 실행 후 상황에 맞는 밈을 표시
+- [x] FastAPI가 인터넷에서 상황별 밈을 검색해 아바타 영역에 표시 (오프라인 시 fallback)
 
 ### ✅ Response Format
 - [x] MCP specification compliant

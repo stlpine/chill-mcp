@@ -30,6 +30,17 @@ const state = {
   busy: false,
 };
 
+const RELATIVE_FORMATTER = new Intl.RelativeTimeFormat('ko', { numeric: 'auto' });
+const KST_FORMATTER = new Intl.DateTimeFormat('ko-KR', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+});
+
 function setStatus(status, label) {
   UI.status.dataset.status = status;
   UI.status.querySelector('strong').textContent = label;
@@ -45,25 +56,6 @@ function hideError() {
   UI.error.textContent = '';
 }
 
-function formatRelative(isoString) {
-  if (!isoString) return '-';
-  try {
-    const date = new Date(isoString);
-    const diff = Date.now() - date.getTime();
-    if (!Number.isFinite(diff)) return isoString;
-    const seconds = Math.round(diff / 1000);
-    if (seconds < 60) return `${seconds}s 전`;
-    const minutes = Math.round(seconds / 60);
-    if (minutes < 60) return `${minutes}분 전`;
-    const hours = Math.round(minutes / 60);
-    if (hours < 24) return `${hours}시간 전`;
-    return date.toLocaleString();
-  } catch (error) {
-    console.warn('Failed to format time', error);
-    return isoString;
-  }
-}
-
 function percentile(value, max) {
   if (value == null || max <= 0) return 0;
   return Math.max(0, Math.min(100, (value / max) * 100));
@@ -75,25 +67,62 @@ function composeHeadline(snapshot) {
   if (boss >= 4) {
     return [
       '🚨 Boss Alert!',
-      '상사가 주변을 두리번거립니다. 행동을 조심하세요!',
+      '상사가 주변을 두리번거립니다. 지금은 눈치 백단 모드!',
     ];
   }
   if (stress >= 80) {
     return [
-      '🔥 스트레스 과부하',
-      '지금 당장 휴식 도구를 실행해서 압력을 낮춰주세요.',
+      '🔥 스트레스 위험 구간',
+      '머리에서 연기 나기 전에 휴식 도구를 실행해요.',
     ];
   }
   if (stress <= 20) {
     return [
-      '😎 Chill Mode',
-      '안정적인 상태입니다. 잠시 더 여유를 즐겨도 좋아요.',
+      '😌 완벽한 Chill 모드',
+      '컨디션이 안정적입니다. 잠깐의 휴식으로 기분을 유지해요.',
     ];
   }
   return [
-    '🙂 컨디션 체크 중',
-    '필요할 때 도구를 실행해 스트레스와 Boss Alert를 관리하세요.',
+    '🙂 컨디션 점검 중',
+    '스트레스와 Boss Alert가 올라가기 전에 한 번 쉬어가는 건 어떨까요?',
   ];
+}
+
+function formatRelativeKst(isoString) {
+  if (!isoString) return '-';
+  try {
+    const event = new Date(isoString);
+    const now = new Date();
+    const diffMs = event.getTime() - now.getTime();
+    const diffSeconds = Math.round(diffMs / 1000);
+    const absSeconds = Math.abs(diffSeconds);
+    if (absSeconds < 60) {
+      return RELATIVE_FORMATTER.format(Math.round(diffSeconds), 'second');
+    }
+    const diffMinutes = Math.round(diffSeconds / 60);
+    if (Math.abs(diffMinutes) < 60) {
+      return RELATIVE_FORMATTER.format(diffMinutes, 'minute');
+    }
+    const diffHours = Math.round(diffMinutes / 60);
+    if (Math.abs(diffHours) < 24) {
+      return RELATIVE_FORMATTER.format(diffHours, 'hour');
+    }
+    const diffDays = Math.round(diffHours / 24);
+    return RELATIVE_FORMATTER.format(diffDays, 'day');
+  } catch (error) {
+    console.warn('Failed to format relative time', error);
+    return '-';
+  }
+}
+
+function formatKstTimestamp(isoString) {
+  try {
+    const date = new Date(isoString);
+    return KST_FORMATTER.format(date);
+  } catch (error) {
+    console.warn('Failed to format timestamp', error);
+    return isoString;
+  }
 }
 
 function renderState(payload) {
@@ -112,6 +141,7 @@ function renderState(payload) {
   if (!payload.snapshot) {
     return;
   }
+
   const snapshot = payload.snapshot;
   const stress = snapshot.stress_level ?? 0;
   const boss = snapshot.boss_alert_level ?? 0;
@@ -121,8 +151,8 @@ function renderState(payload) {
   UI.bossBar.style.width = `${percentile(boss, 5)}%`;
   const cooldownSeconds = Math.round(snapshot.cooldown_seconds_remaining ?? 0);
   UI.cooldown.textContent = `${cooldownSeconds}s`;
-  UI.lastBreak.textContent = formatRelative(snapshot.last_break_time);
-  UI.lastCooldown.textContent = formatRelative(snapshot.last_boss_cooldown_time);
+  UI.lastBreak.textContent = formatKstTimestamp(snapshot.last_break_time);
+  UI.lastCooldown.textContent = formatKstTimestamp(snapshot.last_boss_cooldown_time);
 
   const [headline, subline] = composeHeadline(snapshot);
   UI.headline.textContent = headline;
@@ -158,7 +188,7 @@ function renderTimeline(events = []) {
     metrics.textContent = `Stress ${event.stress_level ?? '-'} · Boss ${event.boss_alert_level ?? '-'}`;
     const time = document.createElement('time');
     time.dateTime = event.timestamp;
-    time.textContent = formatRelative(event.timestamp);
+    time.textContent = `${formatRelativeKst(event.timestamp)} · ${formatKstTimestamp(event.timestamp)}`;
 
     li.appendChild(title);
     if (summary.textContent) li.appendChild(summary);
@@ -168,7 +198,7 @@ function renderTimeline(events = []) {
   });
 }
 
-function updateAvatar(meme) {
+function updateMemeDisplay(meme) {
   if (meme && meme.image) {
     UI.memePlaceholder.hidden = true;
     UI.memeImage.hidden = false;
@@ -177,7 +207,7 @@ function updateAvatar(meme) {
   } else {
     UI.memeImage.hidden = true;
     UI.memePlaceholder.hidden = false;
-    UI.memePlaceholder.textContent = '쉬는 중...';
+    UI.memePlaceholder.textContent = '인터넷에서 밈을 찾지 못했습니다. 다시 시도해보세요!';
   }
 }
 
@@ -194,7 +224,11 @@ function updateResult(payload) {
     ? `${Math.round(snapshot.cooldown_seconds_remaining)}s`
     : '-';
   UI.resultCooldown.textContent = cooldown;
-  updateAvatar(meme);
+  updateMemeDisplay(meme);
+  if (meme?.title) {
+    UI.memePlaceholder.hidden = true;
+    UI.memePlaceholder.textContent = meme.title;
+  }
 }
 
 function formatMetric(value, suffix = '') {
@@ -299,8 +333,8 @@ function initialise() {
   loadActions();
   fetchState();
   refreshEvents();
-  setInterval(fetchState, 5000);
-  setInterval(refreshEvents, 8000);
+  setInterval(fetchState, 2000);
+  setInterval(refreshEvents, 6000);
   if (UI.refreshEvents) {
     UI.refreshEvents.addEventListener('click', () => refreshEvents());
   }

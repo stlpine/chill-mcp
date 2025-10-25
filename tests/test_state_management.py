@@ -115,8 +115,8 @@ def test_stress_auto_increment_over_time():
         print("    Waiting 65 seconds for stress accumulation...")
         time.sleep(65)
 
-        # Use check_stress_status to see stress WITHOUT taking a break (no reduction)
-        response_text = call_tool(process, "check_stress_status", 101)
+        # Check stress level by taking a break
+        response_text = call_tool(process, "take_a_break", 101)
         final_stress = extract_stress_level(response_text)
 
         if final_stress is None:
@@ -303,8 +303,8 @@ def test_boss_alert_cooldown_auto_decrease():
         for i in range(3):
             call_tool(process, "take_a_break", 400 + i)
 
-        # Get current boss alert (use status check to avoid resetting cooldown)
-        response_text = call_tool(process, "check_stress_status", 410)
+        # Get current boss alert
+        response_text = call_tool(process, "take_a_break", 410)
         boss_before = extract_boss_alert(response_text)
 
         if boss_before is None or boss_before == 0:
@@ -317,8 +317,8 @@ def test_boss_alert_cooldown_auto_decrease():
         print("    Waiting 18 seconds for cooldowns...")
         time.sleep(18)
 
-        # Check boss alert - should have decreased by 2 (use status check to avoid resetting cooldown)
-        response_text = call_tool(process, "check_stress_status", 411)
+        # Check boss alert - should have decreased by 2
+        response_text = call_tool(process, "take_a_break", 411)
         boss_after = extract_boss_alert(response_text)
 
         if boss_after is None:
@@ -481,7 +481,7 @@ def test_stress_max_limit_hundred():
         # The max value check is about bounds, not accumulation
         stress_levels = []
         for i in range(10):
-            response_text = call_tool(process, "check_stress_status", 700 + i)
+            response_text = call_tool(process, "take_a_break", 700 + i)
             stress = extract_stress_level(response_text)
             if stress is not None:
                 stress_levels.append(stress)

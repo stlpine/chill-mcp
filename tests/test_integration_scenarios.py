@@ -167,8 +167,8 @@ def test_scenario_stress_accumulation_without_breaks():
         print("    Waiting 65 seconds for stress accumulation...")
         time.sleep(65)
 
-        # Use check_stress_status to see stress without taking a break
-        response_text = call_tool(process, "check_stress_status", 201)
+        # Check stress by taking a break
+        response_text = call_tool(process, "take_a_break", 201)
         final_stress, _ = extract_state(response_text)
 
         print(f"    Final stress: {final_stress}")
@@ -278,8 +278,8 @@ def test_scenario_cooldown_recovery():
         for i in range(5):
             call_tool(process, "take_a_break", 400 + i)
 
-        # Get current boss alert (use check_stress_status to not reset cooldown)
-        response_text = call_tool(process, "check_stress_status", 410)
+        # Get current boss alert
+        response_text = call_tool(process, "take_a_break", 410)
         _, initial_boss = extract_state(response_text)
 
         print(f"    Boss alert at: {initial_boss}")
@@ -289,8 +289,8 @@ def test_scenario_cooldown_recovery():
         print(f"    Waiting {wait_time} seconds for cooldowns...")
         time.sleep(wait_time)
 
-        # Check boss alert (use check_stress_status to not reset cooldown)
-        response_text = call_tool(process, "check_stress_status", 411)
+        # Check boss alert
+        response_text = call_tool(process, "take_a_break", 411)
         _, final_boss = extract_state(response_text)
 
         print(f"    Boss alert after cooldowns: {final_boss}")

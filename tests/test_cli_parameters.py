@@ -260,9 +260,9 @@ def test_boss_alertness_cooldown_parameter_affects_timing():
         print("    Waiting 6 seconds for cooldown...")
         time.sleep(6)
 
-        # Check boss alert again using check_stress_status (doesn't increase boss alert)
-        response_text = call_tool(process, "check_stress_status", 302)
-        # Extract boss alert from check_stress_status response
+        # Check boss alert again
+        response_text = call_tool(process, "take_a_break", 302)
+        # Extract boss alert from response
         import re
         boss_pattern = r"Boss Alert Level:\s*([0-5])/5"
         match = re.search(boss_pattern, response_text) if response_text else None

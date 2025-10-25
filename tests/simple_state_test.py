@@ -185,8 +185,8 @@ def test_boss_alert_cooldown():
         for i in range(3):
             call_tool(process, "take_a_break", 300 + i)
 
-        # Get current boss alert using status check (doesn't take a break)
-        response_text = call_tool(process, "check_stress_status", 310)
+        # Get current boss alert
+        response_text = call_tool(process, "take_a_break", 310)
         boss_before = extract_boss_alert(response_text)
 
         if boss_before is None or boss_before == 0:
@@ -199,8 +199,8 @@ def test_boss_alert_cooldown():
         print("    Waiting 7 seconds for cooldown...")
         time.sleep(7)
 
-        # Check boss alert using status check (doesn't reset cooldown)
-        response_text = call_tool(process, "check_stress_status", 311)
+        # Check boss alert
+        response_text = call_tool(process, "take_a_break", 311)
         boss_after = extract_boss_alert(response_text)
 
         print(f"    Boss alert after cooldown: {boss_after}")

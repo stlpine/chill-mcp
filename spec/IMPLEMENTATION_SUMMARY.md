@@ -81,9 +81,11 @@ All requirements for the SKT AI Summit Hackathon Pre-mission have been successfu
 - **`IMPLEMENTATION_SUMMARY.md`** - This document
 
 ### Testing & Validation
-- **`validate_format.py`** - Response format validation (verified ✓)
-- **`test_chillmcp.py`** - Automated test suite
-- **`simple_test.py`** - Simple functionality tests
+- **`run_all_tests.py`** - Master test runner (comprehensive)
+- **`test_cli_parameters.py`** - CLI parameters (CRITICAL gate)
+- **`test_state_management.py`** - State logic (30% of score)
+- **`test_response_format.py`** - Response format validation
+- **`test_integration_scenarios.py`** - End-to-end scenarios
 
 ---
 
@@ -99,9 +101,10 @@ usage: main.py [-h] [--boss_alertness BOSS_ALERTNESS]
 
 ### ✅ Response Format Validation
 ```bash
-$ python validate_format.py
-✓ All sample responses are valid!
-✓ Regex patterns work correctly!
+$ python tests/test_response_format.py
+✓ MCP response structure valid
+✓ All required fields present
+✓ Regex patterns work correctly
 ```
 
 Sample validated response:
@@ -204,8 +207,8 @@ python main.py
 # 3. Test with custom parameters
 python main.py --boss_alertness 80 --boss_alertness_cooldown 60
 
-# 4. Validate format
-python validate_format.py
+# 4. Run comprehensive tests
+python tests/run_all_tests.py
 ```
 
 ---

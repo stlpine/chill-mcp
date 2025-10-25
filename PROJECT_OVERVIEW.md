@@ -33,10 +33,13 @@ chill-mcp/
 │   ├── TESTING.md                  # Comprehensive testing guide
 │   └── ARCHITECTURE.md             # System architecture & design
 │
-└── tests/                          # 🧪 Test Suite
-    ├── test_chillmcp.py            # Integration tests (MCP protocol)
-    ├── validate_format.py          # Response format validation
-    └── simple_test.py              # Unit tests (direct state tests)
+└── tests/                          # 🧪 Comprehensive Test Suite
+    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
+    ├── test_mcp_protocol.py        # MCP protocol compliance
+    ├── test_state_management.py    # State logic (30% of score)
+    ├── test_response_format.py     # Response format validation
+    ├── test_integration_scenarios.py # End-to-end scenarios
+    └── run_all_tests.py            # Master test runner
 ```
 
 ## Quick Start
@@ -51,7 +54,7 @@ pip install -r requirements.txt
 python main.py
 
 # 3. Test
-python tests/validate_format.py
+python tests/run_all_tests.py
 ```
 
 ## Key Files
@@ -123,14 +126,15 @@ python tests/validate_format.py
 ## Testing Quick Reference
 
 ```bash
-# Format validation
-python tests/validate_format.py
+# Run all tests (recommended)
+python tests/run_all_tests.py
 
-# Functionality tests
-python tests/simple_test.py
-
-# Integration tests
-python tests/test_chillmcp.py
+# Or run individual test suites
+python tests/test_cli_parameters.py          # Critical gate
+python tests/test_mcp_protocol.py            # MCP protocol
+python tests/test_state_management.py        # State logic (30%)
+python tests/test_response_format.py         # Format validation
+python tests/test_integration_scenarios.py   # End-to-end
 
 # Manual test
 python main.py --help
@@ -169,8 +173,9 @@ $ python main.py --help
 
 ### ✅ Response Format
 ```bash
-$ python tests/validate_format.py
-✓ All sample responses valid
+$ python tests/test_response_format.py
+✓ MCP response structure valid
+✓ All required fields present
 ✓ Regex patterns work correctly
 ```
 
@@ -222,9 +227,9 @@ python main.py --boss_alertness 100               # Always increase alert
 python main.py --boss_alertness_cooldown 10       # Fast cooldown
 
 # Testing
-python tests/validate_format.py                   # Validate responses
-python tests/simple_test.py                       # Unit tests
-python tests/test_chillmcp.py                     # Integration tests
+python tests/run_all_tests.py                     # Run all tests (recommended)
+python tests/test_cli_parameters.py                # Critical gate tests
+python tests/test_state_management.py              # State logic (30% of score)
 
 # Verification
 python main.py --help                             # Show parameters

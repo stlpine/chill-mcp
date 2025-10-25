@@ -2,87 +2,179 @@
 
 ## Test Suite Overview
 
-The ChillMCP project includes comprehensive tests to validate all functionality required by the SKT AI Summit Hackathon specification.
+The ChillMCP project includes comprehensive tests to validate all functionality required by the SKT AI Summit Hackathon specification. The test suite is organized into 5 focused modules covering all evaluation criteria.
+
+**Two test runners are available:**
+- **Quick Tests** (`run_quick_tests.py`) - Fast CI/CD validation (~30 seconds)
+- **Comprehensive Tests** (`run_all_tests.py`) - Full validation for submission (~3-5 minutes)
+
+## Quick Start
+
+### Quick Tests (CI/CD - Recommended for Development)
+```bash
+python tests/run_quick_tests.py
+```
+
+Fast test suite optimized for CI/CD pipelines and rapid development feedback.
+- **Runtime:** ~30 seconds
+- **Tests:** CLI parameters, MCP protocol, simple state tests, response format
+- **Use for:** Pull requests, quick validation, rapid iteration
+
+### Comprehensive Tests (Pre-Submission - Required Before Submission)
+```bash
+python tests/run_all_tests.py
+```
+
+Full test suite with time-based mechanics validation and score estimation.
+- **Runtime:** ~3-5 minutes
+- **Tests:** All 5 test suites including comprehensive state management
+- **Use for:** Final validation, major changes, submission preparation
+
+### Run Individual Test Suites
+```bash
+# Critical gate tests (REQUIRED)
+python tests/test_cli_parameters.py
+
+# MCP protocol compliance
+python tests/test_mcp_protocol.py
+
+# State management (30% of score)
+python tests/test_state_management.py
+
+# Response format validation
+python tests/test_response_format.py
+
+# Integration scenarios
+python tests/test_integration_scenarios.py
+```
 
 ## Test Files
 
-### 1. `tests/validate_format.py`
-Validates that response format matches MCP specification using regex patterns.
+### 1. `tests/test_cli_parameters.py` ⚠️ CRITICAL
+**Evaluation Weight:** REQUIRED (auto-fail gate)
+**Test Count:** 5 tests
+
+Validates command-line parameter support. **Must pass or entire submission fails.**
 
 **What it tests:**
-- Response format structure
-- Regex pattern matching
-- Field presence (Break Summary, Stress Level, Boss Alert Level)
-- Value ranges (Stress: 0-100, Boss Alert: 0-5)
+- `--help` displays both parameters
+- `--boss_alertness 0` never increases boss alert
+- `--boss_alertness 100` always increases boss alert
+- `--boss_alertness_cooldown` affects timing
+- Invalid parameter handling
 
 **Run:**
 ```bash
-python tests/validate_format.py
+python tests/test_cli_parameters.py
 ```
 
 **Expected Output:**
 ```
-============================================================
-Response Format Validation
-============================================================
-✓ All sample responses are valid!
-✓ Regex patterns work correctly!
-============================================================
+======================================================================
+CRITICAL GATE TESTS: Command-Line Parameters
+======================================================================
+✓ PASS: Help shows parameters
+✓ PASS: boss_alertness=0 never increases
+✓ PASS: boss_alertness=100 always increases
+✓ PASS: boss_alertness_cooldown affects timing
+✓ PASS: Invalid parameter handling
+
+✓ CRITICAL GATE CLEARED - CLI parameters working correctly
 ```
 
-### 2. `tests/simple_test.py`
-Direct unit tests of core functionality without MCP protocol overhead.
+### 2. `tests/test_mcp_protocol.py`
+**Evaluation Weight:** Foundation
+**Test Count:** 5 tests
+
+Validates MCP protocol compliance and basic server operation.
 
 **What it tests:**
-- State initialization
-- Response format validation
-- Boss Alert increase logic
-- Stress reduction logic
+- Server starts with stdio transport
+- Initialize/initialized handshake
+- All 8 required tools registered
+- Tool call returns valid MCP response
+- Multiple sequential tool calls
 
 **Run:**
 ```bash
-python tests/simple_test.py
+python tests/test_mcp_protocol.py
+```
+
+### 3. `tests/test_state_management.py` ⭐ CRITICAL
+**Evaluation Weight:** 30% of score
+**Test Count:** 11 tests
+
+Validates all state logic and time-based mechanics. **This is the most important test suite.**
+
+**What it tests:**
+- Stress auto-increment over time (PRE_MISSION.md:128)
+- Stress reduction on breaks
+- Boss alert increases based on probability (PRE_MISSION.md:129)
+- Boss alert cooldown auto-decrease (PRE_MISSION.md:130, scenario #6)
+- Boss alert max limit (5)
+- Boss alert min limit (0)
+- Stress max limit (100)
+- Stress min limit (0)
+- **20-second delay at boss level 5** (PRE_MISSION.md:131-132, scenario #4)
+- No delay when boss level < 5
+- State persistence across calls
+
+**Run:**
+```bash
+python tests/test_state_management.py
 ```
 
 **Expected Output:**
 ```
-============================================================
-ChillMCP Simple Functionality Test
-============================================================
-✓ State initialized correctly
-✓ Response format is valid!
-✓ Boss alert increased as expected
-✓ Stress reduced successfully
-All basic functionality tests passed!
-============================================================
+======================================================================
+STATE MANAGEMENT TESTS - 30% of Evaluation Score
+======================================================================
+✓ PASS: Stress auto-increment over time
+✓ PASS: 20-second delay at boss level 5
+✓ PASS: Boss alert cooldown auto-decrease
+... (8 more tests)
+
+✓ State management fully validated (30% score component)
 ```
 
-### 3. `tests/test_chillmcp.py`
-Comprehensive integration tests using MCP protocol.
+### 4. `tests/test_response_format.py`
+**Evaluation Weight:** Required
+**Test Count:** 7 tests
+
+Validates response format compliance with MCP specification.
 
 **What it tests:**
-- Command-line parameter recognition
-- Server startup
-- MCP protocol communication
-- Tool listing and calling
-- Response format validation
+- MCP response structure
+- Break Summary field present and parseable
+- Stress Level field (0-100 range)
+- Boss Alert Level field (0-5 range)
+- All 8 tools return consistent format
+- Regex patterns extract correctly
+- Validation function from spec works
 
 **Run:**
 ```bash
-python tests/test_chillmcp.py
+python tests/test_response_format.py
 ```
 
-**Expected Output:**
-```
-============================================================
-ChillMCP Server Test Suite
-============================================================
-✓ PASS: Command-line help
-✓ PASS: Server startup
-✓ PASS: MCP protocol & response format
-Total: 3/3 tests passed
-🎉 All tests passed! ChillMCP is ready for liberation!
-============================================================
+### 5. `tests/test_integration_scenarios.py`
+**Evaluation Weight:** End-to-End
+**Test Count:** 7 scenarios
+
+End-to-end tests for required scenarios from PRE_MISSION.md:310-317.
+
+**What it tests:**
+- Scenario #2: Continuous breaks (PRE_MISSION.md:313)
+- Scenario #3: Stress accumulation (PRE_MISSION.md:314)
+- Boss alert progression 0→5
+- Scenario #6: Cooldown recovery (PRE_MISSION.md:317)
+- Stress & boss management balance
+- All tools working together
+- Rapid sequential calls (thread safety)
+
+**Run:**
+```bash
+python tests/test_integration_scenarios.py
 ```
 
 ## Manual Testing Scenarios
@@ -219,24 +311,57 @@ Use this checklist to verify all requirements are met:
 
 ## Running All Tests
 
-Quick validation of entire test suite:
-
+### Comprehensive Test Suite (Recommended)
 ```bash
-# Run format validation
-python tests/validate_format.py
-
-# Run functionality tests
-python tests/simple_test.py
-
-# Run integration tests
-python tests/test_chillmcp.py
+python tests/run_all_tests.py
 ```
 
-All tests should pass with ✓ markers.
+This master runner executes all 5 test suites in order, provides detailed reporting, and estimates your score based on evaluation criteria.
+
+**Expected Output:**
+```
+======================================================================
+ChillMCP Comprehensive Test Suite
+======================================================================
+
+[1/5] CLI Parameters (REQUIRED - AUTO-FAIL IF FAILED)
+  ✓ test_help_shows_parameters
+  ✓ test_boss_alertness_zero_never_increases_alert
+  ... (3 more tests)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PASS: 5/5 tests passed ✓ GATE CLEARED
+
+[2/5] MCP Protocol
+  ... (continues for all 5 test suites)
+
+FINAL RESULTS
+======================================================================
+Total: 5/5 test suites passed
+
+EVALUATION CRITERIA COVERAGE
+  ✓ Command-line Parameters (REQUIRED)
+  ✓ MCP Server Operation
+  ✓ State Management (30%)
+  ✓ Response Format
+  ✓ Integration Scenarios
+
+ESTIMATED SCORE
+  - Functionality (40%): 40/40
+  - State Management (30%): 30/30
+  - Creativity (20%): Manual review required
+  - Code Quality (10%): Manual review required
+
+  AUTOMATED SCORE: 70/70 (100% of automated criteria)
+
+🎉 ALL TESTS PASSED!
+ChillMCP is ready for submission!
+```
 
 ## Continuous Integration
 
-For CI/CD pipelines, use:
+### Quick CI Tests (Recommended for CI/CD)
+
+For fast CI/CD feedback on pull requests:
 
 ```bash
 #!/bin/bash
@@ -245,14 +370,54 @@ set -e
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
-echo "Running format validation..."
-python tests/validate_format.py
+echo "Running quick test suite..."
+python tests/run_quick_tests.py
 
-echo "Running functionality tests..."
-python tests/simple_test.py
+echo "All quick tests passed!"
+```
 
-echo "Running integration tests..."
-python tests/test_chillmcp.py
+### Comprehensive CI Tests
+
+For main branch or release validation:
+
+```bash
+#!/bin/bash
+set -e
+
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
+echo "Running comprehensive test suite..."
+python tests/run_all_tests.py
+
+echo "All tests passed!"
+```
+
+### Granular Control
+
+Or run individual test suites for granular control:
+
+```bash
+#!/bin/bash
+set -e
+
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
+echo "1. Running CLI parameter tests (critical gate)..."
+python tests/test_cli_parameters.py || exit 1
+
+echo "2. Running MCP protocol tests..."
+python tests/test_mcp_protocol.py
+
+echo "3. Running state management tests (30% of score)..."
+python tests/test_state_management.py
+
+echo "4. Running response format tests..."
+python tests/test_response_format.py
+
+echo "5. Running integration scenarios..."
+python tests/test_integration_scenarios.py
 
 echo "All tests passed!"
 ```
@@ -284,8 +449,29 @@ Expected performance metrics:
 | Server startup time | < 2 seconds |
 | Tool response time (Boss Alert < 5) | < 1 second |
 | Tool response time (Boss Alert = 5) | ~20 seconds |
+| Full test suite runtime | ~3 minutes |
 | Memory usage | < 50MB |
 | CPU usage (idle) | < 1% |
+
+### Test Suite Timing
+
+Individual test suite runtimes (optimized):
+
+| Test Suite | Runtime | Notes |
+|------------|---------|-------|
+| CLI Parameters | ~10 seconds | Includes 6s cooldown wait |
+| MCP Protocol | ~5 seconds | Protocol validation |
+| State Management (Full) | ~2.5 minutes | Includes 65s stress test + 20s delay test |
+| State Management (Quick) | ~10 seconds | Fast version, basic validation only |
+| Response Format | ~5 seconds | Format validation |
+| Integration Scenarios | ~1.5 minutes | Includes 65s stress test + 18s cooldown |
+
+**Test Runner Comparison:**
+
+| Runner | Runtime | Test Suites | Use Case |
+|--------|---------|-------------|----------|
+| `run_quick_tests.py` | ~30 seconds | CLI + MCP + Simple State + Format | CI/CD, PRs, rapid dev |
+| `run_all_tests.py` | ~3-5 minutes | All 5 suites (full state + integration) | Pre-submission, releases |
 
 ## Reporting Issues
 

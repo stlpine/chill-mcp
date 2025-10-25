@@ -401,19 +401,29 @@ def take_break(self):
 
 ## Testing Architecture
 
-Tests are organized by scope:
+Tests are organized into 5 comprehensive suites mapped to evaluation criteria:
 
-1. **Unit Tests** (`simple_test.py`)
-   - Test state management directly
-   - No MCP protocol overhead
+1. **CLI Parameters** (`test_cli_parameters.py`)
+   - CRITICAL gate - auto-fail if failed
+   - Tests `--boss_alertness` and `--boss_alertness_cooldown`
 
-2. **Format Tests** (`validate_format.py`)
-   - Validate regex patterns
-   - Test response structure
+2. **MCP Protocol** (`test_mcp_protocol.py`)
+   - MCP protocol compliance
+   - Server startup and tool registration
 
-3. **Integration Tests** (`test_chillmcp.py`)
-   - Full MCP protocol
-   - End-to-end validation
+3. **State Management** (`test_state_management.py`)
+   - 30% of evaluation score
+   - Stress/boss alert logic, cooldown, 20s delay
+
+4. **Response Format** (`test_response_format.py`)
+   - Response structure validation
+   - Regex pattern extraction
+
+5. **Integration Scenarios** (`test_integration_scenarios.py`)
+   - End-to-end scenarios from PRE_MISSION.md
+   - Thread safety and performance
+
+**Master Runner:** `run_all_tests.py` executes all suites with score estimation
 
 ## Future Improvements
 

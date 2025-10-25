@@ -122,6 +122,22 @@ Boss Alert Level: 2
 
 ## Testing
 
+### Automated Test Suites
+
+**Quick Tests (CI/CD - ~30 seconds):**
+```bash
+python tests/run_quick_tests.py
+```
+Fast validation for pull requests and rapid development. Includes CLI parameters, MCP protocol, simple state tests, and response format validation.
+
+**Comprehensive Tests (Pre-Submission - ~3-5 minutes):**
+```bash
+python tests/run_all_tests.py
+```
+Full validation with time-based mechanics, integration scenarios, and score estimation. **Run this before submission!**
+
+See [docs/TESTING.md](docs/TESTING.md) for detailed testing guide.
+
 ### Using MCP Inspector
 
 FastMCP comes with a built-in inspector tool:
@@ -304,10 +320,13 @@ chill-mcp/
 │   ├── PRE_MISSION.md              # Formatted mission brief
 │   ├── IMPLEMENTATION_PLAN.md      # Detailed implementation plan
 │   └── IMPLEMENTATION_SUMMARY.md   # Implementation summary & validation
-└── tests/                          # Test suite
-    ├── test_chillmcp.py            # Automated integration tests
-    ├── validate_format.py          # Response format validation
-    └── simple_test.py              # Simple functionality tests
+└── tests/                          # Comprehensive test suite
+    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
+    ├── test_mcp_protocol.py        # MCP protocol compliance
+    ├── test_state_management.py    # State logic (30% of score)
+    ├── test_response_format.py     # Response format validation
+    ├── test_integration_scenarios.py # End-to-end scenarios
+    └── run_all_tests.py            # Master test runner
 ```
 
 ## License

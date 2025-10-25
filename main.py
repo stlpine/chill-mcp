@@ -363,43 +363,6 @@ def email_organizing() -> str:
         random.choice(summaries)
     )
 
-
-@mcp.tool()
-def check_stress_status() -> str:
-    """Check current stress and boss alert levels without taking a break"""
-    logger.info("check_stress_status tool called")
-    with state.lock:
-        # Update stress based on time elapsed
-        state._update_stress()
-        current_stress = state.stress_level
-        current_boss = state.boss_alert_level
-    
-    logger.info(f"Status check - Stress: {current_stress}, Boss: {current_boss}")
-    
-    # Determine status emoji and message based on levels
-    if current_stress >= 80:
-        emoji = "😰"
-        stress_msg = "Critical stress levels! Emergency break needed!"
-    elif current_stress >= 50:
-        emoji = "😅"
-        stress_msg = "Moderate stress building up..."
-    elif current_stress >= 20:
-        emoji = "😌"
-        stress_msg = "Slightly stressed but manageable"
-    else:
-        emoji = "😎"
-        stress_msg = "Chill and relaxed!"
-    
-    if current_boss >= 4:
-        boss_msg = "🚨 Boss is VERY suspicious! Be careful!"
-    elif current_boss >= 2:
-        boss_msg = "⚠️ Boss is getting suspicious..."
-    else:
-        boss_msg = "✅ Boss is not paying attention"
-    
-    return f"{emoji} Current Status Check\n\n{stress_msg}\n{boss_msg}\n\n📊 Stress Level: {current_stress}/100\n👀 Boss Alert Level: {current_boss}/5"
-
-
 # Optional Break Tools
 
 @mcp.tool()

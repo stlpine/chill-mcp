@@ -151,8 +151,8 @@ function renderState(payload) {
   UI.bossBar.style.width = `${percentile(boss, 5)}%`;
   const cooldownSeconds = Math.round(snapshot.cooldown_seconds_remaining ?? 0);
   UI.cooldown.textContent = `${cooldownSeconds}s`;
-  UI.lastBreak.textContent = formatKstTimestamp(snapshot.last_break_time);
-  UI.lastCooldown.textContent = formatKstTimestamp(snapshot.last_boss_cooldown_time);
+  UI.lastBreak.textContent = formatRelativeKst(snapshot.last_break_time);
+  UI.lastCooldown.textContent = formatRelativeKst(snapshot.last_boss_cooldown_time);
 
   const [headline, subline] = composeHeadline(snapshot);
   UI.headline.textContent = headline;

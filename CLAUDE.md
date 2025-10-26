@@ -23,14 +23,14 @@ main.py (33 lines) - Entry point and dependency wiring
 ├── infrastructure/
 │   ├── cli.py (45 lines)              # argparse runtime config parsing
 │   └── logging_config.py (28 lines)   # file-based logging bootstrap
-├── domain/state.py (209 lines)        # Thread-safe state models
+├── domain/state.py (238 lines)        # Thread-safe state + break orchestration
 │   ├── AgentStressState              # Stress auto-increment + break reduction
 │   ├── BossAlertState                # Boss probability + cooldown management
-│   └── ChillState                    # Service coordinating agent/boss + thread
+│   └── ChillState                    # Service coordinating agent/boss + thread/delay
 ├── presentation/
 │   ├── controller.py (37 lines)      # FastMCP wiring + lifecycle management
-│   ├── tools.py (109 lines)          # Tool registration & message selection
-│   ├── responses.py (33 lines)       # Response formatting + 20s delay logic
+│   ├── tools.py (123 lines)          # Tool registration & option assembly
+│   ├── responses.py (16 lines)       # Pure response formatting
 │   └── message_catalog.py (271 lines)# Meme/message pools & summaries
 └── tests/                            # Comprehensive automated suites
     ├── CLI, protocol, state, format tests (critical gates)
@@ -142,14 +142,14 @@ python -m py_compile main.py
    Boss Alert Level: {0-5}
    ```
 
-   - Implementation: `presentation/responses.py:8-33`
+   - Implementation: `presentation/responses.py` (pure formatter)
    - Must match regex patterns in spec/PRE_MISSION.md:257-203
 
 3. **Thread Safety** (REQUIRED - concurrent access)
    - All state access must use `with self.lock:` context manager
    - Background thread runs continuously
    - Internal helpers (`AgentStressState.apply_elapsed_time`, `BossAlertState.register_break`) run inside the lock
-   - Implementation: `domain/state.py:113-209`
+   - Implementation: `domain/state.py` (ChillState + helpers)
 
 ### State Management Logic
 
@@ -157,18 +157,18 @@ python -m py_compile main.py
 
 - Auto-increments: 1+ points per minute (elapsed time / 60)
 - Decreases on break: random(1, 100)
-- Implementation: `AgentStressState.apply_elapsed_time()` (`domain/state.py:19-34`), `AgentStressState.reduce_for_break()` (`domain/state.py:35-46`)
+ - Implementation: `AgentStressState.apply_elapsed_time()` / `AgentStressState.reduce_for_break()` (`domain/state.py`)
 
 **Boss Alert Level (0-5):**
 
 - Increases on break: random(0, 100) < boss_alertness probability
 - Auto-decreases: every boss_alertness_cooldown seconds via background thread
 - At level 5: triggers 20-second delay
-- Implementation: `BossAlertState.register_break()` (`domain/state.py:70-80`), `BossAlertState.cooldown_step()` (`domain/state.py:82-92`)
+ - Implementation: `BossAlertState.register_break()` / `BossAlertState.cooldown_step()` (`domain/state.py`)
 
 **20-Second Delay:**
 
-- Blocking: `time.sleep(20)` at `domain/state.py:127-144`
+- Blocking: `time.sleep(20)` within `ChillState.perform_break()` (`domain/state.py`)
 - Triggered when: boss_alert_level == 5
 - Applied: In `ChillState.perform_break()` after state evaluation
 
@@ -176,7 +176,7 @@ python -m py_compile main.py
 
 **Purpose:** Auto-decrease boss alert level on cooldown schedule
 **Type:** Daemon thread (exits when main exits)
-**Implementation:** `domain/state.py:147-159`
+**Implementation:** `domain/state.py` (cooldown worker)
 
 ```python
 def _cooldown_worker(self):
@@ -620,14 +620,14 @@ Before committing changes:
 
 ### File Locations
 
-- Entry point: `main.py` (1-33)
-- CLI parsing: `infrastructure/cli.py` (9-45)
-- Logging bootstrap: `infrastructure/logging_config.py` (6-28)
-- Agent/boss state service: `domain/state.py` (11-209)
-- MCP controller: `presentation/controller.py` (1-37)
-- Tool registry: `presentation/tools.py` (1-109)
-- Response helpers: `presentation/responses.py` (1-33)
-- Message pools: `presentation/message_catalog.py` (1-271)
+- Entry point: `main.py` (33 lines)
+- CLI parsing: `infrastructure/cli.py` (45 lines)
+- Logging bootstrap: `infrastructure/logging_config.py` (28 lines)
+- Agent/boss state service: `domain/state.py` (238 lines)
+- MCP controller: `presentation/controller.py` (37 lines)
+- Tool registry: `presentation/tools.py` (123 lines)
+- Response helpers: `presentation/responses.py` (16 lines)
+- Message pools: `presentation/message_catalog.py` (271 lines)
 
 ### Key Variables
 

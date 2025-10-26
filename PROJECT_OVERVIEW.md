@@ -26,7 +26,7 @@ chill-mcp/
 ├── presentation/
 │   ├── controller.py           # FastMCP bootstrap + lifecycle
 │   ├── tools.py                # Tool registration helpers
-│   ├── responses.py            # Response formatting + delay logic
+│   ├── responses.py            # Pure response formatting
 │   └── message_catalog.py      # Meme/message pools
 ├── docs/                       # 📚 Documentation
 │   ├── TESTING.md
@@ -59,11 +59,11 @@ python tests/run_all_tests.py
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
 | `main.py` | Entry point & controller bootstrap | 33 | ⭐⭐⭐ |
-| `domain/state.py` | Agent/Boss state management service | 209 | ⭐⭐⭐ |
-| `presentation/tools.py` | MCP tool registration layer | 109 | ⭐⭐⭐ |
+| `domain/state.py` | Agent/Boss state management service | 238 | ⭐⭐⭐ |
+| `presentation/tools.py` | MCP tool registration layer | 123 | ⭐⭐⭐ |
 | `presentation/message_catalog.py` | Meme/message pools | 271 | ⭐⭐ |
 | `infrastructure/cli.py` | CLI parsing & validation | 45 | ⭐⭐⭐ |
-| `presentation/responses.py` | Response formatter & delay handling | 33 | ⭐⭐ |
+| `presentation/responses.py` | Pure response formatter | 16 | ⭐⭐ |
 | `README.md` | User guide & documentation | ~280 | ⭐⭐ |
 | `CLAUDE.md` | Development guide for Claude Code | ~650 | ⭐⭐ |
 | `spec/PRE_MISSION.md` | Hackathon requirements | ~330 | ⭐⭐ |

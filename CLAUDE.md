@@ -19,77 +19,57 @@ This is a hackathon project that implements an MCP server simulating AI agent st
 ## Quick Architecture Overview
 
 ```
-main.py (500+ lines)
-├── CLI Parsing (argparse)
-│   ├── --boss_alertness (0-100, REQUIRED)
-│   └── --boss_alertness_cooldown (seconds, REQUIRED)
-│
-├── Logging System (File-based logging)
-│   ├── setup_logging() - Configures file logging
-│   ├── logs/chill-mcp-YYYYMMDD.log - Daily log files
-│   └── No stdout interference (MCP protocol safe)
-│
-├── ChillState Class (Thread-safe state management)
-│   ├── State: stress_level (0-100), boss_alert_level (0-5)
-│   ├── Config: boss_alertness, boss_alertness_cooldown
-│   ├── Timing: last_break_time, last_boss_cooldown_time
-│   ├── Concurrency: threading.Lock
-│   ├── Background: daemon thread for auto-cooldown
-│   ├── Logging: All state changes logged
-│   └── _update_stress() - Private method (called with lock held)
-│
-├── format_response() (Pure formatter - no side effects)
-│   └── Returns formatted string (takes stress/boss as params)
-│
-├── take_break_and_format() (State mutation + formatting)
-│   ├── Calls state.take_break()
-│   ├── Applies 20s delay if boss_alert_level == 5
-│   └── Calls format_response() with state values
-│
-└── 12 MCP Tools (@mcp.tool decorators)
-    ├── Basic: take_a_break, watch_netflix, show_meme
-    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
-                  deep_thinking, email_organizing
-    ├── Status: check_stress_status
-    └── Optional: chimaek, leave_work, company_dinner
-=======
-└── 11 MCP Tools (@mcp.tool decorators)
-    ├── Basic: take_a_break, watch_netflix, show_meme
-    ├── Advanced: bathroom_break, coffee_mission, urgent_call,
-    │             deep_thinking, email_organizing
-    └── Optional: chimaek, leave_work, company_dinner
->>>>>>> origin/main
+main.py (33 lines) - Entry point and dependency wiring
+├── infrastructure/
+│   ├── cli.py (45 lines)              # argparse runtime config parsing
+│   └── logging_config.py (28 lines)   # file-based logging bootstrap
+├── domain/state.py (238 lines)        # Thread-safe state + break orchestration
+│   ├── AgentStressState              # Stress auto-increment + break reduction
+│   ├── BossAlertState                # Boss probability + cooldown management
+│   └── ChillState                    # Service coordinating agent/boss + thread/delay
+├── application/
+│   └── controller.py (37 lines)      # FastMCP wiring + lifecycle management
+├── presentation/
+│   ├── tools.py (123 lines)          # Tool registration & option assembly
+│   ├── responses.py (16 lines)       # Pure response formatting
+│   └── message_catalog.py (271 lines)# Meme/message pools & summaries
+└── tests/                            # Comprehensive automated suites
+    ├── CLI, protocol, state, format tests (critical gates)
+    └── run_quick_tests.py / run_all_tests.py (orchestrators)
+
+12 MCP Tools registered (@mcp.tool):
+  • 기본: take_a_break, watch_netflix, show_meme
+  • 고급: bathroom_break, coffee_mission, urgent_call, deep_thinking, email_organizing
+  • 기타: check_stress_status, chimaek, leave_work, company_dinner
 ```
 
 ## File Structure
 
 ```
 chill-mcp/
-├── main.py                    # Main implementation (all code here)
-├── requirements.txt           # Dependencies
-├── LICENSE                    # MIT License
-├── README.md                  # User documentation
-├── PROJECT_OVERVIEW.md        # Project summary
-├── CLAUDE.md                  # This file (dev guide)
-│
-├── spec/                      # Specifications
-│   ├── PRE_MISSION.md         # Original hackathon requirements
-│   ├── IMPLEMENTATION_PLAN.md # Planning document
-│   └── IMPLEMENTATION_SUMMARY.md # Validation checklist
-│
-├── docs/                      # Technical documentation
-│   ├── TESTING.md             # Testing guide
-│   └── ARCHITECTURE.md        # Detailed architecture
-│
-└── tests/                     # Comprehensive test suite
-    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
-    ├── test_mcp_protocol.py        # MCP protocol compliance
-    ├── test_state_management.py    # State logic (30% of score) - Full
-    ├── simple_state_test.py        # State logic - Quick version
-    ├── test_response_format.py     # Response format validation
-    ├── test_integration_scenarios.py # End-to-end scenarios
-    ├── run_quick_tests.py          # Quick test runner (CI/CD)
-    └── run_all_tests.py            # Comprehensive test runner
+├── main.py                  # Entry point (imports, controller bootstrap)
+├── infrastructure/          # Runtime wiring
+│   ├── cli.py               # argparse runtime configuration
+│   └── logging_config.py    # Structured file logging setup
+├── domain/                  # Core business logic
+│   ├── models.py            # RuntimeConfig dataclass
+│   └── state.py             # AgentStressState, BossAlertState, ChillState
+├── application/             # FastMCP orchestration layer
+│   └── controller.py        # Server lifecycle + state wiring
+├── presentation/            # MCP-facing layer
+│   ├── tools.py             # Tool registration helpers
+│   ├── responses.py         # Pure response formatting
+│   └── message_catalog.py   # Meme/message/summaries catalog
+├── docs/                    # Technical documentation
+│   ├── ARCHITECTURE.md
+│   └── TESTING.md
+├── spec/                    # Hackathon requirements & plans
+├── tests/                   # Critical gates & integration tests
+├── webapp/                  # (Optional) Dashboard implementation
+├── requirements.txt
+├── README.md
+├── PROJECT_OVERVIEW.md
+└── CLAUDE.md                # This development guide
 ```
 
 ## Development Setup
@@ -152,7 +132,7 @@ python -m py_compile main.py
 
    - `--boss_alertness`: Controls probability (0-100%) of boss alert increase
    - `--boss_alertness_cooldown`: Seconds between auto-decreases of boss alert
-   - Implementation: argparse parser at lines 14-20 in main.py
+   - Implementation: `infrastructure/cli.py:9-45`
 
 2. **Response Format** (REQUIRED - must be regex-parseable)
 
@@ -164,14 +144,14 @@ python -m py_compile main.py
    Boss Alert Level: {0-5}
    ```
 
-   - Implementation: format_response() at lines 100-103, take_break_and_format() at lines 106-114 in main.py
+   - Implementation: `presentation/responses.py` (pure formatter)
    - Must match regex patterns in spec/PRE_MISSION.md:257-203
 
 3. **Thread Safety** (REQUIRED - concurrent access)
    - All state access must use `with self.lock:` context manager
    - Background thread runs continuously
-   - Private methods like \_update_stress() are called with lock already held
-   - Implementation: ChillState class lines 26-93 in main.py
+   - Internal helpers (`AgentStressState.apply_elapsed_time`, `BossAlertState.register_break`) run inside the lock
+   - Implementation: `domain/state.py` (ChillState + helpers)
 
 ### State Management Logic
 
@@ -179,42 +159,41 @@ python -m py_compile main.py
 
 - Auto-increments: 1+ points per minute (elapsed time / 60)
 - Decreases on break: random(1, 100)
-- Implementation: lines 57-68 (\_update_stress), 79-81 (reduction in take_break)
+ - Implementation: `AgentStressState.apply_elapsed_time()` / `AgentStressState.reduce_for_break()` (`domain/state.py`)
 
 **Boss Alert Level (0-5):**
 
 - Increases on break: random(0, 100) < boss_alertness probability
 - Auto-decreases: every boss_alertness_cooldown seconds via background thread
 - At level 5: triggers 20-second delay
-- Implementation: lines 41-55 (cooldown thread), 83-85 (increase in take_break)
+ - Implementation: `BossAlertState.register_break()` / `BossAlertState.cooldown_step()` (`domain/state.py`)
 
 **20-Second Delay:**
 
-- Blocking: `time.sleep(20)` at line 112 in main.py
+- Blocking: `time.sleep(20)` within `ChillState.perform_break()` (`domain/state.py`)
 - Triggered when: boss_alert_level == 5
-- Applied: In take_break_and_format() before returning
+- Applied: In `ChillState.perform_break()` after state evaluation
 
 ### Background Thread
 
 **Purpose:** Auto-decrease boss alert level on cooldown schedule
 **Type:** Daemon thread (exits when main exits)
-**Implementation:** Lines 41-55 in main.py
+**Implementation:** `domain/state.py` (cooldown worker)
 
 ```python
-def _start_cooldown_thread(self):
-    def cooldown_worker():
-        while True:
-            time.sleep(1)  # Check every second
-            with self.lock:
-                now = datetime.now()
-                elapsed = (now - self.last_boss_cooldown_time).total_seconds()
-
-                if elapsed >= self.boss_alertness_cooldown and self.boss_alert_level > 0:
-                    self.boss_alert_level = max(0, self.boss_alert_level - 1)
-                    self.last_boss_cooldown_time = now
-
-    thread = threading.Thread(target=cooldown_worker, daemon=True)
-    thread.start()
+def _cooldown_worker(self):
+    while True:
+        time.sleep(1)
+        with self.lock:
+            result = self.boss.cooldown_step(datetime.now())
+            if result:
+                old_level, new_level, elapsed = result
+                self.logger.info(
+                    "Boss alert cooldown: %s -> %s (elapsed: %.1fs)",
+                    old_level,
+                    new_level,
+                    elapsed,
+                )
 ```
 
 **Important:** Thread safety is critical here - always use lock
@@ -224,9 +203,10 @@ def _start_cooldown_thread(self):
 ### Adding a New Break Tool
 
 1. Add tool function with @mcp.tool() decorator
-2. Use take_break_and_format() for consistent output
-3. Provide varied messages (list + random.choice)
-4. **Update documentation** (see Documentation Maintenance section)
+2. Build `(message, summary)` option pairs (use helper if needed)
+3. Call `controller.state.perform_break(options)` to mutate state + enforce delay
+4. Pass outcome to `format_response()` for consistent formatting
+5. **Update documentation** (see Documentation Maintenance section)
 
 Example:
 
@@ -234,15 +214,18 @@ Example:
 @mcp.tool()
 def new_tool() -> str:
     """Description of the tool"""
-    messages = [
-        "Message variant 1...",
-        "Message variant 2...",
-        "Message variant 3..."
+    options = [
+        ("Message variant 1...", "Summary A"),
+        ("Message variant 2...", "Summary B"),
+        ("Message variant 3...", "Summary C"),
     ]
-    return take_break_and_format(
-        "🎮",  # emoji
-        random.choice(messages),  # activity message
-        "Summary text"  # break summary
+    outcome = controller.state.perform_break(options)
+    return format_response(
+        "🎮",
+        outcome.message,
+        outcome.summary,
+        outcome.stress_level,
+        outcome.boss_alert_level,
     )
 ```
 
@@ -266,17 +249,24 @@ def new_tool() -> str:
 **Example - Changing stress increment:**
 
 ```python
-def _update_stress(self):
-    # PRIVATE: Called by take_break() with lock already held
+def apply_elapsed_time(self):
     now = datetime.now()
     elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
 
-    # Modify this logic
+    # Modify this logic as needed
     stress_increase = int(elapsed_minutes * 2)  # Changed multiplier
 
-    # Keep bounds checking
     if stress_increase > 0:
-        self.stress_level = min(100, self.stress_level + stress_increase)
+        new_level = min(100, self.level + stress_increase)
+        if new_level != self.level:
+            self._logger.info(
+                "Stress auto-increased: %s -> %s (+%s, elapsed: %.1fmin)",
+                self.level,
+                new_level,
+                stress_increase,
+                elapsed_minutes,
+            )
+            self.level = new_level
 ```
 
 ### Debugging State Issues
@@ -284,13 +274,14 @@ def _update_stress(self):
 **Enable verbose output:**
 
 ```python
-# Add to take_break() method
-def take_break(self):
-    with self.lock:
-        import sys
-        print(f"DEBUG: stress={self.stress_level}, boss={self.boss_alert_level}",
-              file=sys.stderr)
-        # ... rest of method
+# Add near the top of ChillState.take_break()
+with self.lock:
+    import sys
+    print(
+        f"DEBUG: stress={self.agent.level}, boss={self.boss.level}",
+        file=sys.stderr,
+    )
+    # ... rest of method
 ```
 
 **Test state directly:**
@@ -378,16 +369,15 @@ python tests/run_all_tests.py
 
 ```bash
 # 1. Make your code changes
-# ... edit main.py ...
 
-# 2. Check line count (if main.py was modified)
-wc -l main.py
+# 2. Check line counts for touched modules
+wc -l main.py domain/state.py presentation/tools.py
 
-# 3. Update documentation with new line count and changes
-# Update CLAUDE.md - Quick Architecture Overview (line count)
+# 3. Update documentation with new counts and structural notes
+# Update CLAUDE.md - Quick Architecture Overview (line counts)
 # Update CLAUDE.md - File Locations (line ranges)
-# Update PROJECT_OVERVIEW.md - Project Structure (line count)
-# Update PROJECT_OVERVIEW.md - Key Files table (line count)
+# Update PROJECT_OVERVIEW.md - Project Structure (line counts)
+# Update PROJECT_OVERVIEW.md - Key Files table (line counts)
 
 # 4. Update feature-specific documentation
 # If tools changed: Update README.md features list
@@ -401,12 +391,11 @@ wc -l main.py
 
 ### Common Documentation Inconsistencies to Avoid
 
-1. **Line counts** - Update everywhere when main.py changes
+1. **Line counts** - Update everywhere when core modules change
 
-   - CLAUDE.md: "main.py (X lines)" in Quick Architecture Overview
-   - CLAUDE.md: "Main code: `main.py` (lines 1-X)" in Quick Reference
-   - PROJECT_OVERVIEW.md: "Main MCP server (X lines)" in Project Structure
-   - PROJECT_OVERVIEW.md: Line count in Key Files table
+   - CLAUDE.md: Quick Architecture Overview + File Locations
+   - PROJECT_OVERVIEW.md: Project Structure + Key Files table
+   - docs/ARCHITECTURE.md: Diagrams or callouts referencing line ranges
 
 2. **Tool lists** - Keep synchronized across files
 
@@ -430,8 +419,9 @@ wc -l main.py
 Before committing, verify consistency:
 
 ```bash
-# Check for line count references to main.py
+# Check for line count references to main.py/domain/state.py
 grep -n "main.py.*lines" CLAUDE.md PROJECT_OVERVIEW.md
+grep -n "domain/state.py" CLAUDE.md PROJECT_OVERVIEW.md
 
 # Check for tool counts
 grep -n "8 tools" README.md CLAUDE.md PROJECT_OVERVIEW.md
@@ -503,8 +493,15 @@ self.boss_alert_level = min(5, max(0, new_value))  # 0-5
 @mcp.tool()
 def tool_name() -> str:
     """Docstring becomes tool description"""
-    messages = [...]  # Multiple variants for variety
-    return take_break_and_format(emoji, random.choice(messages), summary)
+    options = [...]  # Sequence of (message, summary) tuples
+    outcome = controller.state.perform_break(options)
+    return format_response(
+        emoji,
+        outcome.message,
+        outcome.summary,
+        outcome.stress_level,
+        outcome.boss_alert_level,
+    )
 ```
 
 ### Time-Based Logic Pattern
@@ -583,14 +580,19 @@ if elapsed >= threshold:
 
 ## Documentation Reference
 
-| Document             | Purpose        | When to Read                     |
-| -------------------- | -------------- | -------------------------------- |
-| main.py              | Implementation | Always - it's the only code file |
-| spec/PRE_MISSION.md  | Requirements   | Understanding what to implement  |
-| docs/ARCHITECTURE.md | Design details | Deep dive into architecture      |
-| docs/TESTING.md      | Testing guide  | Before testing changes           |
-| PROJECT_OVERVIEW.md  | Quick summary  | Initial orientation              |
-| README.md            | User guide     | Understanding user perspective   |
+| Document/Module                 | Purpose                                   | When to Read                     |
+| ------------------------------- | ----------------------------------------- | -------------------------------- |
+| main.py                         | Entry point + controller bootstrap        | Wiring overview before running   |
+| infrastructure/cli.py           | CLI parsing & validation                  | Touching command-line behavior   |
+| infrastructure/logging_config.py| Logging configuration details             | Adjusting log output             |
+| domain/state.py                 | Core state & thread logic                 | Modifying stress/boss mechanics  |
+| presentation/tools.py           | Tool registration + flow                  | Adding/updating MCP tools        |
+| presentation/message_catalog.py | Message/meme content source               | Tweaking humor/summary content   |
+| spec/PRE_MISSION.md             | Requirements                              | Understanding what to implement  |
+| docs/ARCHITECTURE.md            | Design details                            | Deep dive into architecture      |
+| docs/TESTING.md                 | Testing guide                             | Before testing changes           |
+| PROJECT_OVERVIEW.md             | Quick summary                             | Initial orientation              |
+| README.md                       | User guide                                | Understanding user perspective   |
 
 ## Validation Checklist
 
@@ -599,7 +601,7 @@ Before committing changes:
 **Code Validation:**
 
 - [ ] CLI parameters work: `python main.py --help`
-- [ ] Syntax valid: `python -m py_compile main.py`
+- [ ] Syntax valid: `python -m py_compile main.py` and `python -m py_compile domain/state.py`
 - [ ] All tests pass: `python tests/run_all_tests.py`
 - [ ] CLI gate passes: `python tests/test_cli_parameters.py`
 - [ ] State management passes (30%): `python tests/test_state_management.py`
@@ -620,33 +622,33 @@ Before committing changes:
 
 ### File Locations
 
-- Main code: `main.py` (lines 1-400)
-- CLI parsing: `main.py` (lines 14-20)
-- State class: `main.py` (lines 26-93)
-- Response formatting: `main.py` (lines 100-114)
-  - format_response (pure): lines 100-103
-  - take_break_and_format (helper): lines 106-114
-- Tools: `main.py` (lines 117-395)
-  - Basic tools: lines 117-185
-  - Advanced tools: lines 187-302
-  - Optional tools: lines 305-395
+- Entry point: `main.py` (33 lines)
+- CLI parsing: `infrastructure/cli.py` (45 lines)
+- Logging bootstrap: `infrastructure/logging_config.py` (28 lines)
+- Agent/boss state service: `domain/state.py` (238 lines)
+- MCP controller: `application/controller.py` (37 lines)
+- Tool registry: `presentation/tools.py` (123 lines)
+- Response helpers: `presentation/responses.py` (16 lines)
+- Message pools: `presentation/message_catalog.py` (271 lines)
 
 ### Key Variables
 
-- `state.stress_level` - Agent stress (0-100)
-- `state.boss_alert_level` - Boss suspicion (0-5)
-- `state.boss_alertness` - Alert increase probability (0-100%)
-- `state.boss_alertness_cooldown` - Auto-decrease interval (seconds)
-- `state.last_break_time` - Last break timestamp
-- `state.last_boss_cooldown_time` - Last cooldown timestamp
+- `ChillState.agent.level` - Agent stress (0-100)
+- `ChillState.agent.last_break_time` - Timestamp of last break
+- `ChillState.boss.level` - Boss suspicion (0-5)
+- `ChillState.boss.alertness_probability` - Alert increase chance (0-100%)
+- `ChillState.boss.cooldown_seconds` - Auto-decrease interval (seconds)
+- `ChillState.boss.last_cooldown_time` - Last cooldown timestamp
 
 ### Key Methods
 
-- `ChillState._update_stress()` - Auto-increment stress (private, called with lock held)
-- `ChillState.take_break()` - Process break, return state
-- `format_response()` - Pure formatter (no side effects)
-- `take_break_and_format()` - State mutation + formatting helper
-- `_start_cooldown_thread()` - Start background daemon
+- `AgentStressState.apply_elapsed_time()` - Auto-increment stress on access
+- `AgentStressState.reduce_for_break()` - Random stress reduction
+- `BossAlertState.register_break()` - Probabilistic boss increase
+- `BossAlertState.cooldown_step()` - Background cooldown decrement
+- `ChillState.take_break()` - Thread-safe orchestration (stress/boss calculation)
+- `ChillState.perform_break()` - Applies delay when needed, returns outcome
+- `presentation.responses.format_response()` - Pure string formatter
 
 ### Test Commands
 

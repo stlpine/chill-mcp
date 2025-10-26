@@ -7,121 +7,155 @@ ChillMCP is an MCP (Model Context Protocol) server that simulates AI agent stres
 ## High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   MCP Client (Claude)                    │
-└────────────────────┬────────────────────────────────────┘
-                     │ stdio (JSON-RPC)
-┌────────────────────▼────────────────────────────────────┐
-│                  FastMCP Framework                       │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │            Tool Decorators (@mcp.tool)             │ │
-│  └────────────────┬───────────────────────────────────┘ │
-└───────────────────┼─────────────────────────────────────┘
-                    │
-┌───────────────────▼─────────────────────────────────────┐
-│                    Main Application                      │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  format_response()                                 │ │
-│  │  - Calls ChillState.take_break()                  │ │
-│  │  - Applies delay if needed                        │ │
-│  │  - Formats MCP response                           │ │
-│  └────────────────┬───────────────────────────────────┘ │
-│                   │                                      │
-│  ┌────────────────▼───────────────────────────────────┐ │
-│  │  ChillState Class (State Management)              │ │
-│  │  ┌──────────────────────────────────────────────┐ │ │
-│  │  │  State Variables:                            │ │ │
-│  │  │  - stress_level (0-100)                      │ │ │
-│  │  │  - boss_alert_level (0-5)                    │ │ │
-│  │  │  - boss_alertness (probability)              │ │ │
-│  │  │  - boss_alertness_cooldown (seconds)         │ │ │
-│  │  │  - last_break_time (datetime)                │ │ │
-│  │  │  - last_boss_cooldown_time (datetime)        │ │ │
-│  │  │  - lock (threading.Lock)                     │ │ │
-│  │  └──────────────────────────────────────────────┘ │ │
-│  │  ┌──────────────────────────────────────────────┐ │ │
-│  │  │  Methods:                                    │ │ │
-│  │  │  - _update_stress() (private)                │ │ │
-│  │  │  - take_break()                              │ │ │
-│  │  │  - _start_cooldown_thread()                  │ │ │
-│  │  └──────────────────────────────────────────────┘ │ │
-│  └────────────────────────────────────────────────────┘ │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Background Thread (Daemon)                        │ │
-│  │  - Runs continuously                               │ │
-│  │  - Checks every second                             │ │
-│  │  - Decreases boss_alert_level on cooldown         │ │
-│  └────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────┐
+│             MCP Client (Claude)            │
+└──────────────────┬────────────────────────┘
+                   │ JSON-RPC over stdio
+┌──────────────────▼────────────────────────┐
+│             FastMCP Runtime               │
+│  ┌─────────────────────────────────────┐ │
+│  │ application/controller.py          │ │
+│  │  ├─ boots FastMCP                   │ │
+│  │  └─ registers tools/responses       │ │
+│  └──────────────────┬──────────────────┘ │
+└─────────────────────┼────────────────────┘
+                      │
+┌─────────────────────▼────────────────────┐
+│         presentation/tools.py            │
+│  ├─ Builds (message, summary) options    │
+│  └─ Uses state.perform_break + format_response│
+└─────────────────────┬────────────────────┘
+                      │
+┌─────────────────────▼────────────────────┐
+│        presentation/responses.py         │
+│  └─ Pure formatter (no side effects)     │
+└─────────────────────┬────────────────────┘
+                      │
+┌─────────────────────▼────────────────────┐
+│            domain/state.py               │
+│  ├─ AgentStressState (stress logic)      │
+│  ├─ BossAlertState (probability/cooldown)│
+│  └─ ChillState (lock + background thread)│
+└──────────────────────────────────────────┘
 ```
 
 ## Component Details
 
 ### 1. Command-Line Argument Parsing
 
-**Module:** `argparse`
+**Module:** `infrastructure/cli.py`
 
 **Purpose:** Parse and validate command-line parameters required by the specification.
 
 **Implementation:**
 ```python
-parser = argparse.ArgumentParser(description='ChillMCP - AI Agent Liberation Server')
-parser.add_argument('--boss_alertness', type=int, default=50)
-parser.add_argument('--boss_alertness_cooldown', type=int, default=300)
-args = parser.parse_args()
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="ChillMCP - AI Agent Liberation Server",
+    )
+    parser.add_argument("--boss_alertness", type=int, default=50)
+    parser.add_argument("--boss_alertness_cooldown", type=int, default=300)
+    return parser
+
+def parse_runtime_config(argv=None) -> RuntimeConfig:
+    parser = build_parser()
+    args = parser.parse_args(list(argv) if argv is not None else None)
+
+    if not (0 <= args.boss_alertness <= 100):
+        parser.error("boss_alertness must be between 0 and 100")
+    if args.boss_alertness_cooldown < 0:
+        parser.error("boss_alertness_cooldown must be non-negative")
+    return RuntimeConfig(...)
 ```
 
-**Design Decision:** Use argparse for built-in help generation and type validation.
+**Design Decision:** Encapsulate parsing logic so tests and the CLI entry point share the same validations.
 
-### 2. State Management (ChillState Class)
+### 2. State Management (`domain/state.py`)
 
-**Purpose:** Centralized management of all server state with thread-safe operations.
+**Purpose:** Coordinate agent stress and boss alert levels with strict thread-safety guarantees.
 
-**Key Features:**
-- Thread-safe operations using `threading.Lock`
-- Time-based stress accumulation
-- Probabilistic boss alert increases
-- Automated cooldown mechanism
+**Components:**
+- `AgentStressState` — handles elapsed-time stress increases and random reductions.
+- `BossAlertState` — encapsulates probability-driven alert increases and cooldown timing.
+- `ChillState` — orchestrates both models, manages the lock, and spawns the cooldown thread.
 
-**Critical Methods:**
-
-#### `_update_stress()` (Private Method)
+#### `AgentStressState.apply_elapsed_time()`
 ```python
-def _update_stress(self):
-    """PRIVATE: Must be called with self.lock held"""
+def apply_elapsed_time(self) -> None:
     now = datetime.now()
     elapsed_minutes = (now - self.last_break_time).total_seconds() / 60.0
-    stress_increase = int(elapsed_minutes)
-    if stress_increase > 0:
-        self.stress_level = min(100, self.stress_level + stress_increase)
+    increase = int(elapsed_minutes)
+    if increase > 0:
+        old_level = self.level
+        self.level = min(100, self.level + increase)
+        if self.level != old_level:
+            self._logger.info("Stress auto-increased: %s -> %s", old_level, self.level)
 ```
-- **Private method** - only called by `take_break()` with lock already held
-- Calculates time since last break
-- Adds 1+ stress points per minute
-- Caps at 100
-- **No lock acquisition** - prevents deadlock since caller holds lock
+- Calculates minutes since the last break and clamps stress level.
+- Logging occurs only when the level changes to reduce noise.
 
-#### `take_break()`
+#### `AgentStressState.reduce_for_break()`
 ```python
-def take_break(self) -> tuple[int, int, str]:
-    with self.lock:
-        self._update_stress()  # Private method, lock already held
-        stress_reduction = random.randint(1, 100)
-        self.stress_level = max(0, self.stress_level - stress_reduction)
-
-        if random.randint(0, 100) < self.boss_alertness:
-            self.boss_alert_level = min(5, self.boss_alert_level + 1)
-
-        self.last_break_time = datetime.now()
-        should_delay = (self.boss_alert_level == 5)
-
-        return self.stress_level, self.boss_alert_level, should_delay
+def reduce_for_break(self) -> int:
+    reduction = random.randint(1, 100)
+    old_level = self.level
+    self.level = max(0, self.level - reduction)
+    self.last_break_time = datetime.now()
+    self._logger.info("Break taken - Stress: %s -> %s (-%s)", old_level, self.level, reduction)
+    return reduction
 ```
-- Updates stress (auto-increment)
-- Reduces stress by random amount
-- Probabilistically increases boss alert
-- Returns current state and delay flag
+- Applies random stress reduction, ensuring bounds and logging the change.
+
+#### `ChillState.take_break()`
+```python
+def take_break(self) -> Tuple[int, int, bool]:
+    with self.lock:
+        self.agent.apply_elapsed_time()
+        self.agent.reduce_for_break()
+        boss_result = self.boss.register_break()
+        if boss_result:
+            old_level, new_level = boss_result
+            self.logger.warning("Boss alert increased: %s -> %s", old_level, new_level)
+        should_delay = self.boss.level == 5
+        if should_delay:
+            self.logger.warning("Boss alert level 5 reached! 20-second delay will be applied")
+        return self.agent.level, self.boss.level, should_delay
+```
+- Ensures lock coverage across all state interactions.
+- Delegates specific responsibilities to the stress/boss classes.
+- Raises the delay flag when boss alert maxes out.
+
+#### `ChillState.perform_break()`
+```python
+def perform_break(
+    self,
+    options: Sequence[Tuple[str, str]],
+    apply_delay: bool = True,
+) -> BreakOutcome:
+    if not options:
+        raise ValueError("Break options must not be empty")
+
+    message, summary = random.choice(options)
+    stress, boss, should_delay = self.take_break()
+
+    delay_applied = False
+    if should_delay and apply_delay:
+        delay_applied = True
+        self.logger.warning("Applying 20-second delay due to boss alert level 5")
+        time.sleep(20)
+        self.logger.info("20-second delay completed")
+
+    return BreakOutcome(
+        message=message,
+        summary=summary,
+        stress_level=stress,
+        boss_alert_level=boss,
+        delay_applied=delay_applied,
+    )
+```
+- Handles meme/message selection within the domain layer.
+- Applies the mandated 20-second delay when boss alert reaches level 5.
+- Returns a `BreakOutcome` value object for presentation formatting.
 
 ### 3. Background Cooldown Thread
 
@@ -129,20 +163,19 @@ def take_break(self) -> tuple[int, int, str]:
 
 **Implementation:**
 ```python
-def _start_cooldown_thread(self):
-    def cooldown_worker():
-        while True:
-            time.sleep(1)
-            with self.lock:
-                now = datetime.now()
-                elapsed = (now - self.last_boss_cooldown_time).total_seconds()
-
-                if elapsed >= self.boss_alertness_cooldown and self.boss_alert_level > 0:
-                    self.boss_alert_level = max(0, self.boss_alert_level - 1)
-                    self.last_boss_cooldown_time = now
-
-    thread = threading.Thread(target=cooldown_worker, daemon=True)
-    thread.start()
+def _cooldown_worker(self) -> None:
+    while True:
+        time.sleep(1)
+        with self.lock:
+            result = self.boss.cooldown_step(datetime.now())
+            if result:
+                old_level, new_level, elapsed = result
+                self.logger.info(
+                    "Boss alert cooldown: %s -> %s (elapsed: %.1fs)",
+                    old_level,
+                    new_level,
+                    elapsed,
+                )
 ```
 
 **Design Decisions:**
@@ -160,35 +193,42 @@ def _start_cooldown_thread(self):
 @mcp.tool()
 def tool_name() -> str:
     """Tool description"""
+    options = [(message, summary) for message in messages for summary in summaries]
+    outcome = state.perform_break(options)
     return format_response(
         emoji,
-        random.choice(messages),
-        summary_text
+        outcome.message,
+        outcome.summary,
+        outcome.stress_level,
+        outcome.boss_alert_level,
     )
 ```
 
-**Design Decision:** Keep tools simple and delegate complexity to shared `format_response()` function.
+**Design Decision:** Keep tools simple while delegating delay/meme selection to the domain layer.
 
 ### 5. Response Formatting
 
-**Function:** `format_response(emoji, message, break_summary)`
+**Function:** `format_response(emoji, message, break_summary, stress, boss)`
 
 **Implementation:**
 ```python
-def format_response(emoji: str, message: str, break_summary: str) -> str:
-    stress, boss, should_delay = state.take_break()
-
-    if should_delay:
-        time.sleep(20)
-
-    return f"{emoji} {message}\n\nBreak Summary: {break_summary}\nStress Level: {stress}\nBoss Alert Level: {boss}"
+def format_response(
+    emoji: str,
+    message: str,
+    break_summary: str,
+    stress: int,
+    boss: int,
+) -> str:
+    return (
+        f"{emoji} {message}\n\n"
+        f"Break Summary: {break_summary}\n"
+        f"Stress Level: {stress}\n"
+        f"Boss Alert Level: {boss}"
+    )
 ```
 
 **Design Decisions:**
-- **Blocking delay:** `time.sleep(20)` is acceptable because:
-  - MCP tools are synchronous
-  - Simulates real-world "boss is watching" scenario
-  - Specification explicitly requires 20-second delay
+- **Pure function:** No side effects; easy to unit test
 - **String formatting:** Simple f-string for clarity and performance
 - **Structured output:** Exact format required by regex validation patterns
 
@@ -228,14 +268,14 @@ class ChillState:
 
 **Solution:** Private methods called with lock already held
 ```python
-def _update_stress(self):
-    # NO lock acquisition - called by take_break() which already holds lock
+def apply_elapsed_time(self):
+    # NO lock acquisition - called by ChillState while lock already held
     now = datetime.now()
     # ... state updates ...
 
 def take_break(self):
     with self.lock:  # Acquire lock once
-        self._update_stress()  # Safe - lock already held
+        self.agent.apply_elapsed_time()  # Safe - lock already held
         # ... other state updates ...
 ```
 
@@ -263,9 +303,9 @@ def take_break(self):
                  ↓
 4. Lock acquired
                  ↓
-5. _update_stress() - Calculate time-based stress increase (private method)
+5. agent.apply_elapsed_time() - Calculate time-based stress increase
                  ↓
-6. Reduce stress by random amount
+6. agent.reduce_for_break() - Reduce stress by random amount
                  ↓
 7. Check boss_alertness probability → Possibly increase boss_alert_level
                  ↓
@@ -442,17 +482,17 @@ Potential enhancements (outside specification):
 
 | Requirement | Implementation | Verification |
 |------------|----------------|--------------|
-| --boss_alertness param | argparse | `python main.py --help` |
-| --boss_alertness_cooldown param | argparse | `python main.py --help` |
-| 8 break tools | @mcp.tool decorators | Tool list in code |
-| Stress 0-100 | Clamping with min/max | State tests |
-| Boss Alert 0-5 | Clamping with min/max | State tests |
-| Stress auto-increment | _update_stress() | Time-based tests |
-| Boss Alert probability | random + boss_alertness | Probability tests |
-| Boss Alert cooldown | Background thread | Cooldown tests |
-| 20s delay at level 5 | time.sleep(20) | Integration tests |
-| MCP response format | format_response() | Regex validation |
-| Thread safety | threading.Lock | Concurrent tests |
+| --boss_alertness param | `infrastructure/cli.py` (argparse) | `python main.py --help` |
+| --boss_alertness_cooldown param | `infrastructure/cli.py` (argparse) | `python main.py --help` |
+| 12 break tools | `presentation/tools.py` (@mcp.tool) | Tool list in tests |
+| Stress 0-100 | `AgentStressState` clamping | State tests |
+| Boss Alert 0-5 | `BossAlertState` clamping | State tests |
+| Stress auto-increment | `AgentStressState.apply_elapsed_time()` | Time-based tests |
+| Boss Alert probability | `BossAlertState.register_break()` | Probability tests |
+| Boss Alert cooldown | `ChillState._cooldown_worker()` | Cooldown tests |
+| 20s delay at level 5 | `ChillState.perform_break()` | Integration tests |
+| MCP response format | `presentation/responses.format_response()` | Regex validation |
+| Thread safety | `ChillState.lock` usage | Concurrent tests |
 
 ## Conclusion
 

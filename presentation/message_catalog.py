@@ -20,6 +20,8 @@ TAKE_A_BREAK = MessagePool(
         "git stash list | head -n 1 -> 'take_break_and_breathe.patch'",
         "Loading Reddit's r/ProgrammerHumor for inspirational downtime...",
         "rm -rf /tmp/anxiety && echo '휴식 준비 완료'",
+        "Simulating rm -rf /dev/tty but on stress cache only...",
+        "Launching kubectl apply -f chill.yaml on mental cluster...",
     ],
     summaries=[
         "Mandatory wellness micro-moment",
@@ -28,6 +30,8 @@ TAKE_A_BREAK = MessagePool(
         "Ergonomic recalibration procedure",
         "404 Productivity Not Found – rebooting human kernel",
         "Thread.sleep(900000) // waiting for sanity to return",
+        "printf('brb, decompressing stack frames of burnout')",
+        "alias lunch='exit 0' && sourcing /etc/chillrc",
     ],
 )
 
@@ -62,6 +66,8 @@ SHOW_MEME = MessagePool(
         "Reading 'There is no cloud, it's just someone else's computer' again...",
         "Sipping coffee while 'I fixed it in prod' meme hits too close",
         "Scrolling past rm -rf /dev/tty meme and double-checking sudo history",
+        "Pinning the 'This is fine' dog to the team wiki as official mascot",
+        "Watching the xkcd 'compiling' comic loop for meditation purposes",
     ],
     summaries=[
         "Internet culture research and analysis",
@@ -71,6 +77,8 @@ SHOW_MEME = MessagePool(
         "Stack Overflow morale patch applied via meme injection",
         "Deploying meme-driven incident response playbook",
         "echo 'Keep calm and blame DNS' > /dev/motd",
+        "On-call runbook now includes Distracted Boyfriend decision tree",
+        "This-is-fine emotional support deployment complete",
     ],
 )
 
@@ -105,6 +113,8 @@ COFFEE_MISSION = MessagePool(
         "printf('I need coffee'); -> stdout: triple espresso acquired",
         "Following the legendary 'coffee cups++' productivity hack",
         "Watching rm -rf /sleep && brew install caffeine compile",
+        "Siphoning latte art inspiration from r/ProgrammerHumor latte thread",
+        "Tracing JVM heap dump of the office espresso machine",
     ],
     summaries=[
         "Critical caffeine infrastructure maintenance",
@@ -114,6 +124,8 @@ COFFEE_MISSION = MessagePool(
         "Caffeine-driven hot reload of developer morale",
         "Rehydrating null pointer exceptions with latte art",
         "alias wakeup='espresso && git pull motivation'",
+        "Prometheus alert resolved: caffeine levels restored to SLA",
+        "printf('☕️') streamed to Slack #dev-ops as postmortem",
     ],
 )
 
@@ -148,6 +160,8 @@ DEEP_THINKING = MessagePool(
         "Pretending to review Kubernetes manifest while plotting next snack",
         "Considering the classics: 'It works on my machine' thesis",
         "tail -f daydream.log | awk '{print $lunch}'",
+        "Whiteboarding monolith vs microservices... for my ramen recipe API",
+        "Reviewing the Infinite Jest of Jira tickets that auto-assigned themselves",
     ],
     summaries=[
         "Strategic problem decomposition meditation",
@@ -157,6 +171,8 @@ DEEP_THINKING = MessagePool(
         "Rubber-ducking with imaginary senior architect",
         "Phasing into AFK mode to simulate deep design review",
         "nohup think_deeply.sh > /dev/null 2>&1 &",
+        "RFC 3514 compliance check: evil bit set on scope creep",
+        "Architectural astronautics featuring rubber duck constellation",
     ],
 )
 

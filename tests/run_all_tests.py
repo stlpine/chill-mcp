@@ -5,7 +5,7 @@ ChillMCP Comprehensive Test Runner (Full Validation)
 Executes all test suites with comprehensive validation and score estimation.
 Includes time-based mechanics, integration scenarios, and thorough state testing.
 
-Target runtime: ~3-5 minutes
+Target runtime: ~4-6 minutes
 Recommended for: Pre-submission validation, major changes, final checks
 
 For faster feedback during development, use run_quick_tests.py (CI/CD)
@@ -99,7 +99,7 @@ def run_test_suite(suite_info, index, total):
             [PYTHON_PATH, test_path],
             capture_output=True,
             text=True,
-            timeout=300  # 5 minute timeout
+            timeout=420  # 7 minute timeout (state tests need ~3-4 min with timing validations)
         )
 
         # Print output
@@ -120,7 +120,7 @@ def run_test_suite(suite_info, index, total):
         }
 
     except subprocess.TimeoutExpired:
-        print(f"✗ Test suite timed out after 5 minutes")
+        print(f"✗ Test suite timed out after 7 minutes")
         return {
             "name": name,
             "passed": False,
@@ -253,7 +253,7 @@ def main():
     print_banner("ChillMCP Comprehensive Test Suite (FULL)", "=")
     print(f"\nStarting comprehensive test run at {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Total test suites: {len(TEST_SUITES)}")
-    print(f"Expected runtime: ~3-5 minutes")
+    print(f"Expected runtime: ~4-6 minutes")
     print(f"\nNote: For quick CI feedback, use run_quick_tests.py (~30s)")
     print()
 

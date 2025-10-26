@@ -267,10 +267,11 @@ main.py
 
 ### Key Functions
 
-- **`ChillState._update_stress()`**: Private method that auto-increments stress (called with lock held)
-- **`ChillState.take_break()`**: Main break processing logic
-- **`format_response()`**: Formats tool responses to MCP specification
-- **Background thread**: Auto-decreases Boss Alert Level on cooldown schedule
+- **`AgentStressState.apply_elapsed_time()`**: Auto-increments stress while the lock is held
+- **`AgentStressState.reduce_for_break()`**: Randomly lowers stress for each break
+- **`ChillState.take_break()`**: Main state orchestration with locking
+- **`ChillState.perform_break()`**: Applies boss level 5 delay and picks meme text
+- **`presentation.responses.format_response()`**: Formats tool responses to MCP specification
 
 ## Evaluation Criteria
 
@@ -279,7 +280,7 @@ main.py
 - ✅ `--boss_alertness` controls Boss Alert increase probability
 - ✅ `--boss_alertness_cooldown` controls auto-decrease timing
 
-✅ **Functionality (40%)**: All 8 tools implemented and working
+✅ **Functionality (40%)**: All 12 tools implemented and working
 
 ✅ **State Management (30%)**: Accurate Stress/Boss Alert logic
 
@@ -292,7 +293,7 @@ main.py
 - [x] Server starts with `python main.py`
 - [x] `--boss_alertness` parameter recognized and functional
 - [x] `--boss_alertness_cooldown` parameter recognized and functional
-- [x] All 9 tools implemented (3 basic + 5 advanced + 1 status)
+- [x] All 12 tools implemented (3 basic + 5 advanced + 4 auxiliary)
 - [x] Stress Level auto-increments over time
 - [x] Boss Alert Level increases based on probability
 - [x] Boss Alert Level auto-decreases on cooldown
@@ -307,26 +308,17 @@ main.py
 
 ```
 chill-mcp/
-├── main.py                         # Main MCP server implementation
-├── requirements.txt                # Python dependencies
-├── README.md                       # This file
-├── LICENSE                         # MIT License
-├── mise.toml                       # Mise configuration
-├── .gitignore                      # Git ignore file
-├── venv/                           # Virtual environment (gitignored)
-├── logs/                           # Log files (auto-created)
-│   └── chill-mcp-YYYYMMDD.log     # Daily log files
-├── spec/                           # Project specifications
-│   ├── PRE_MISSION.md              # Formatted mission brief
-│   ├── IMPLEMENTATION_PLAN.md      # Detailed implementation plan
-│   └── IMPLEMENTATION_SUMMARY.md   # Implementation summary & validation
-└── tests/                          # Comprehensive test suite
-    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
-    ├── test_mcp_protocol.py        # MCP protocol compliance
-    ├── test_state_management.py    # State logic (30% of score)
-    ├── test_response_format.py     # Response format validation
-    ├── test_integration_scenarios.py # End-to-end scenarios
-    └── run_all_tests.py            # Master test runner
+├── main.py                     # Entry point wiring CLI/logging/controller
+├── infrastructure/             # Runtime wiring (CLI & logging)
+├── domain/                      # Core state management service
+├── presentation/                # MCP controller, tools, responses
+├── docs/                        # Architecture & testing guides
+├── spec/                        # Mission brief & planning docs
+├── tests/                       # Comprehensive test suites
+├── webapp/                      # Optional dashboard client
+├── requirements.txt
+├── README.md
+└── LICENSE
 ```
 
 ## License

@@ -10,36 +10,33 @@
 
 ## One-Minute Summary
 
-ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take breaks to manage stress. It implements a gamified system with 11 break tools (8 required + 3 optional), state management (stress and boss alert levels), and configurable parameters for testing different scenarios.
+ChillMCP is a Model Context Protocol (MCP) server that lets AI agents take breaks to manage stress. It implements a gamified system with 12 break tools (8 required + 4 auxiliary), state management (stress and boss alert levels), and configurable parameters for testing different scenarios.
 
 ## Project Structure
 
 ```
 chill-mcp/
-├── main.py                         # ⭐ Main MCP server (500+ lines)
-├── requirements.txt                # Dependencies (fastmcp)
-├── LICENSE                         # MIT License
-├── README.md                       # User documentation
-├── PROJECT_OVERVIEW.md             # This file
-├── mise.toml                       # Mise configuration
-├── .gitignore                      # Git ignore rules
-│
-├── spec/                           # 📋 Project Specifications
-│   ├── PRE_MISSION.md              # Formatted hackathon brief
-│   ├── IMPLEMENTATION_PLAN.md      # Implementation strategy
-│   └── IMPLEMENTATION_SUMMARY.md   # Validation & checklist
-│
-├── docs/                           # 📚 Documentation
-│   ├── TESTING.md                  # Comprehensive testing guide
-│   └── ARCHITECTURE.md             # System architecture & design
-│
-└── tests/                          # 🧪 Comprehensive Test Suite
-    ├── test_cli_parameters.py      # CLI parameters (CRITICAL gate)
-    ├── test_mcp_protocol.py        # MCP protocol compliance
-    ├── test_state_management.py    # State logic (30% of score)
-    ├── test_response_format.py     # Response format validation
-    ├── test_integration_scenarios.py # End-to-end scenarios
-    └── run_all_tests.py            # Master test runner
+├── main.py                     # Entry point wiring CLI/logging/controller
+├── infrastructure/
+│   ├── cli.py                  # argparse runtime config
+│   └── logging_config.py       # File-based logging setup
+├── domain/
+│   ├── models.py               # RuntimeConfig dataclass
+│   └── state.py                # Agent/Boss state + ChillState coordinator
+├── presentation/
+│   ├── controller.py           # FastMCP bootstrap + lifecycle
+│   ├── tools.py                # Tool registration helpers
+│   ├── responses.py            # Response formatting + delay logic
+│   └── message_catalog.py      # Meme/message pools
+├── docs/                       # 📚 Documentation
+│   ├── TESTING.md
+│   └── ARCHITECTURE.md
+├── spec/                       # 📋 Project specifications
+├── tests/                      # 🧪 Comprehensive suites (CLI, MCP, state…)
+├── webapp/                     # Optional dashboard client
+├── requirements.txt
+├── PROJECT_OVERVIEW.md         # This file
+└── README.md                   # User documentation
 ```
 
 ## Quick Start
@@ -61,10 +58,14 @@ python tests/run_all_tests.py
 
 | File | Purpose | Lines | Priority |
 |------|---------|-------|----------|
-| `main.py` | MCP server implementation | 500+ | ⭐⭐⭐ |
-| `README.md` | User guide & documentation | ~280 | ⭐⭐⭐ |
-| `CLAUDE.md` | Development guide for Claude Code | ~634 | ⭐⭐⭐ |
-| `requirements.txt` | Dependencies | 1 | ⭐⭐⭐ |
+| `main.py` | Entry point & controller bootstrap | 33 | ⭐⭐⭐ |
+| `domain/state.py` | Agent/Boss state management service | 209 | ⭐⭐⭐ |
+| `presentation/tools.py` | MCP tool registration layer | 109 | ⭐⭐⭐ |
+| `presentation/message_catalog.py` | Meme/message pools | 271 | ⭐⭐ |
+| `infrastructure/cli.py` | CLI parsing & validation | 45 | ⭐⭐⭐ |
+| `presentation/responses.py` | Response formatter & delay handling | 33 | ⭐⭐ |
+| `README.md` | User guide & documentation | ~280 | ⭐⭐ |
+| `CLAUDE.md` | Development guide for Claude Code | ~650 | ⭐⭐ |
 | `spec/PRE_MISSION.md` | Hackathon requirements | ~330 | ⭐⭐ |
 | `docs/TESTING.md` | Testing guide | ~300 | ⭐⭐ |
 | `docs/ARCHITECTURE.md` | Architecture details | ~400 | ⭐ |
@@ -96,7 +97,6 @@ python tests/run_all_tests.py
 - [x] `chimaek` - Virtual chicken & beer (Korean style)
 - [x] `leave_work` - Immediately leave work
 - [x] `company_dinner` - Company dinner with random events
->>>>>>> origin/main
 
 ### ✅ State Management
 - [x] Stress Level (0-100) with auto-increment
@@ -145,14 +145,14 @@ python main.py --boss_alertness 80 --boss_alertness_cooldown 60
 
 ### Architecture
 - **Framework:** FastMCP for MCP protocol
-- **State:** ChillState class with thread-safe operations
-- **Concurrency:** Background daemon for cooldown
-- **Delay:** Blocking `time.sleep(20)` when boss alert = 5
+- **State:** `domain/state.py` houses AgentStressState, BossAlertState, ChillState
+- **Concurrency:** Background daemon in ChillState for cooldown
+- **Delay:** Blocking `time.sleep(20)` in `presentation/responses.py` when boss alert = 5
 
 ### Design Patterns
 - **Decorator pattern:** `@mcp.tool()` for tools
-- **Singleton state:** Single global ChillState instance
-- **Template method:** Shared `format_response()` function
+- **State service:** Single ChillState instance coordinating agent & boss
+- **Template method:** Shared `presentation.responses.format_response()` function
 - **Thread safety:** `threading.Lock` for all state access
 
 ### Code Quality
@@ -191,7 +191,7 @@ $ python tests/test_response_format.py
 | Criterion | Weight | Status | Notes |
 |-----------|--------|--------|-------|
 | **CLI Parameters** | MUST PASS | ✅ PASS | Both params functional |
-| **Functionality** | 40% | ✅ PASS | All 9 tools implemented |
+| **Functionality** | 40% | ✅ PASS | All 12 tools implemented |
 | **State Management** | 30% | ✅ PASS | Accurate, thread-safe |
 | **Creativity** | 20% | ✅ PASS | Varied humorous messages |
 | **Code Quality** | 10% | ✅ PASS | Clean, documented |

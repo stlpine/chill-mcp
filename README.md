@@ -310,8 +310,9 @@ main.py
 chill-mcp/
 ├── main.py                     # Entry point wiring CLI/logging/controller
 ├── infrastructure/             # Runtime wiring (CLI & logging)
-├── domain/                      # Core state management service
-├── presentation/                # MCP controller, tools, responses
+├── domain/                     # Core state management service
+├── application/                # FastMCP orchestration (controller)
+├── presentation/               # Tool registration, formatting, message catalog
 ├── docs/                        # Architecture & testing guides
 ├── spec/                        # Mission brief & planning docs
 ├── tests/                       # Comprehensive test suites

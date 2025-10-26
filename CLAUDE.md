@@ -27,8 +27,9 @@ main.py (33 lines) - Entry point and dependency wiring
 │   ├── AgentStressState              # Stress auto-increment + break reduction
 │   ├── BossAlertState                # Boss probability + cooldown management
 │   └── ChillState                    # Service coordinating agent/boss + thread/delay
+├── application/
+│   └── controller.py (37 lines)      # FastMCP wiring + lifecycle management
 ├── presentation/
-│   ├── controller.py (37 lines)      # FastMCP wiring + lifecycle management
 │   ├── tools.py (123 lines)          # Tool registration & option assembly
 │   ├── responses.py (16 lines)       # Pure response formatting
 │   └── message_catalog.py (271 lines)# Meme/message pools & summaries
@@ -53,10 +54,11 @@ chill-mcp/
 ├── domain/                  # Core business logic
 │   ├── models.py            # RuntimeConfig dataclass
 │   └── state.py             # AgentStressState, BossAlertState, ChillState
+├── application/             # FastMCP orchestration layer
+│   └── controller.py        # Server lifecycle + state wiring
 ├── presentation/            # MCP-facing layer
-│   ├── controller.py        # FastMCP setup + lifecycle management
 │   ├── tools.py             # Tool registration helpers
-│   ├── responses.py         # Response formatting utilities
+│   ├── responses.py         # Pure response formatting
 │   └── message_catalog.py   # Meme/message/summaries catalog
 ├── docs/                    # Technical documentation
 │   ├── ARCHITECTURE.md
@@ -624,7 +626,7 @@ Before committing changes:
 - CLI parsing: `infrastructure/cli.py` (45 lines)
 - Logging bootstrap: `infrastructure/logging_config.py` (28 lines)
 - Agent/boss state service: `domain/state.py` (238 lines)
-- MCP controller: `presentation/controller.py` (37 lines)
+- MCP controller: `application/controller.py` (37 lines)
 - Tool registry: `presentation/tools.py` (123 lines)
 - Response helpers: `presentation/responses.py` (16 lines)
 - Message pools: `presentation/message_catalog.py` (271 lines)

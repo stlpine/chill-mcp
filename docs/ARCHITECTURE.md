@@ -14,7 +14,7 @@ ChillMCP is an MCP (Model Context Protocol) server that simulates AI agent stres
 ┌──────────────────▼────────────────────────┐
 │             FastMCP Runtime               │
 │  ┌─────────────────────────────────────┐ │
-│  │ presentation/controller.py          │ │
+│  │ application/controller.py          │ │
 │  │  ├─ boots FastMCP                   │ │
 │  │  └─ registers tools/responses       │ │
 │  └──────────────────┬──────────────────┘ │

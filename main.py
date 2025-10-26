@@ -13,7 +13,7 @@ def main(argv: list[str] | None = None) -> int:
     config = parse_runtime_config(argv)
     logger = setup_logging()
 
-    from presentation.controller import ChillController  # Lazy import
+    from application.controller import ChillController  # Lazy import
 
     controller = ChillController(config=config, logger=logger)
 

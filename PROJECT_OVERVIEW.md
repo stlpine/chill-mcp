@@ -23,8 +23,9 @@ chill-mcp/
 ├── domain/
 │   ├── models.py               # RuntimeConfig dataclass
 │   └── state.py                # Agent/Boss state + ChillState coordinator
+├── application/
+│   └── controller.py           # FastMCP bootstrap + lifecycle
 ├── presentation/
-│   ├── controller.py           # FastMCP bootstrap + lifecycle
 │   ├── tools.py                # Tool registration helpers
 │   ├── responses.py            # Pure response formatting
 │   └── message_catalog.py      # Meme/message pools

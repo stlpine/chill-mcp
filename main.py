@@ -7,12 +7,14 @@ import sys
 
 from infrastructure.cli import parse_runtime_config
 from infrastructure.logging_config import setup_logging
-from presentation.controller import ChillController
 
 
 def main(argv: list[str] | None = None) -> int:
     config = parse_runtime_config(argv)
     logger = setup_logging()
+
+    from presentation.controller import ChillController  # Lazy import
+
     controller = ChillController(config=config, logger=logger)
 
     try:

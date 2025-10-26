@@ -1,10 +1,19 @@
 from __future__ import annotations
 
-from typing import Protocol, Tuple
+from typing import Protocol, Sequence, Tuple
+
+from domain.models import BreakOutcome
 
 
 class ChillStateProtocol(Protocol):
     def take_break(self) -> Tuple[int, int, bool]:
+        ...
+
+    def perform_break(
+        self,
+        options: Sequence[Tuple[str, str]],
+        apply_delay: bool = True,
+    ) -> BreakOutcome:
         ...
 
 

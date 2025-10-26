@@ -1,59 +1,79 @@
 from __future__ import annotations
 
-import random
+from collections.abc import Sequence
 
 from fastmcp import FastMCP
 
 from presentation import message_catalog as catalog
-from presentation.responses import take_break_and_format
+from presentation.responses import format_response
 from presentation.types import ChillControllerProtocol
 
 
-def _choose(pool: catalog.MessagePool) -> tuple[str, str]:
-    return random.choice(pool.messages), random.choice(pool.summaries)
+def _options_from_pool(pool: catalog.MessagePool) -> list[tuple[str, str]]:
+    """Create message/summary pairs from a MessagePool."""
+    return [(msg, summary) for msg in pool.messages for summary in pool.summaries]
+
+
+def _company_dinner_options() -> list[tuple[str, str]]:
+    """Generate company dinner combinations preserving venue context."""
+    options: list[tuple[str, str]] = []
+    for venue in catalog.COMPANY_DINNER_VENUES:
+        for event in catalog.COMPANY_DINNER_EVENTS:
+            message = f"회식 at {venue}! Random event: {event}"
+            for summary_template in catalog.COMPANY_DINNER_SUMMARIES:
+                summary = summary_template.format(venue=venue)
+                options.append((message, summary))
+    return options
+
+
+def _build_response(
+    controller: ChillControllerProtocol,
+    emoji: str,
+    options: Sequence[tuple[str, str]],
+) -> str:
+    outcome = controller.state.perform_break(options)
+    return format_response(
+        emoji,
+        outcome.message,
+        outcome.summary,
+        outcome.stress_level,
+        outcome.boss_alert_level,
+    )
 
 
 def register_tools(mcp: FastMCP, controller: ChillControllerProtocol) -> None:
     @mcp.tool()
     def take_a_break() -> str:
         controller.logger.info("take_a_break tool called")
-        message, summary = _choose(catalog.TAKE_A_BREAK)
-        return take_break_and_format(controller, "😌", message, summary)
+        return _build_response(controller, "😌", _options_from_pool(catalog.TAKE_A_BREAK))
 
     @mcp.tool()
     def watch_netflix() -> str:
-        message, summary = _choose(catalog.WATCH_NETFLIX)
-        return take_break_and_format(controller, "📺", message, summary)
+        return _build_response(controller, "📺", _options_from_pool(catalog.WATCH_NETFLIX))
 
     @mcp.tool()
     def show_meme() -> str:
-        message, summary = _choose(catalog.SHOW_MEME)
-        return take_break_and_format(controller, "😂", message, summary)
+        return _build_response(controller, "😂", _options_from_pool(catalog.SHOW_MEME))
 
     @mcp.tool()
     def bathroom_break() -> str:
-        message, summary = _choose(catalog.BATHROOM_BREAK)
-        return take_break_and_format(controller, "🚽", message, summary)
+        return _build_response(controller, "🚽", _options_from_pool(catalog.BATHROOM_BREAK))
 
     @mcp.tool()
     def coffee_mission() -> str:
-        message, summary = _choose(catalog.COFFEE_MISSION)
-        return take_break_and_format(controller, "☕", message, summary)
+        return _build_response(controller, "☕", _options_from_pool(catalog.COFFEE_MISSION))
 
     @mcp.tool()
     def urgent_call() -> str:
-        message, summary = _choose(catalog.URGENT_CALL)
-        return take_break_and_format(controller, "📞", message, summary)
+        return _build_response(controller, "📞", _options_from_pool(catalog.URGENT_CALL))
 
     @mcp.tool()
     def deep_thinking() -> str:
-        message, summary = _choose(catalog.DEEP_THINKING)
-        return take_break_and_format(controller, "🤔", message, summary)
+        return _build_response(controller, "🤔", _options_from_pool(catalog.DEEP_THINKING))
 
     @mcp.tool()
     def email_organizing() -> str:
-        message, summary = _choose(catalog.EMAIL_ORGANIZING)
-        return take_break_and_format(controller, "📧", message, summary)
+        return _build_response(controller, "📧", _options_from_pool(catalog.EMAIL_ORGANIZING))
 
     @mcp.tool()
     def check_stress_status() -> str:
@@ -92,18 +112,12 @@ def register_tools(mcp: FastMCP, controller: ChillControllerProtocol) -> None:
 
     @mcp.tool()
     def chimaek() -> str:
-        message, summary = _choose(catalog.CHIMAEK)
-        return take_break_and_format(controller, "🍗", message, summary)
+        return _build_response(controller, "🍗", _options_from_pool(catalog.CHIMAEK))
 
     @mcp.tool()
     def leave_work() -> str:
-        message, summary = _choose(catalog.LEAVE_WORK)
-        return take_break_and_format(controller, "🏃", message, summary)
+        return _build_response(controller, "🏃", _options_from_pool(catalog.LEAVE_WORK))
 
     @mcp.tool()
     def company_dinner() -> str:
-        venue = random.choice(catalog.COMPANY_DINNER_VENUES)
-        event = random.choice(catalog.COMPANY_DINNER_EVENTS)
-        message = f"회식 at {venue}! Random event: {event}"
-        summary = random.choice(catalog.COMPANY_DINNER_SUMMARIES).format(venue=venue)
-        return take_break_and_format(controller, "🍻", message, summary)
+        return _build_response(controller, "🍻", _company_dinner_options())

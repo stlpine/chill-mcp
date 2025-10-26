@@ -92,16 +92,6 @@ class BossAlertState:
             return old_level, self.level, elapsed
         return None
 
-    def update_alertness_probability(self, probability: int) -> None:
-        probability = max(0, min(100, probability))
-        if probability != self.alertness_probability:
-            self._logger.info(
-                "Boss alertness probability updated: %s%% -> %s%%",
-                self.alertness_probability,
-                probability,
-            )
-            self.alertness_probability = probability
-
     def snapshot(self) -> dict:
         return {
             "boss_alert_level": self.level,
